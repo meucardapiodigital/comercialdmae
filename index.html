@@ -296,7 +296,7 @@ let PRATOS=[
    fixo:"Arroz, Batata frita",opc:2},
  {s:"esp",n:"Caldeirada de Tambaqui",img:"caldeirada",tag:"Sem espinha",d:"Caldeirada de tambaqui sem espinha, caprichada no tempero.",tam:[["Para 1 pessoa",30],["Para 2 pessoas",55],["Para 3 pessoas",80]],
    fixo:"Arroz, Pirão, Vinagrete, Farofa, Pimenta"},
- {s:"esp",n:"Lasanha Simples",img:"lasimples",tag:"3 sabores",d:"Lasanha na marmitinha, bem gratinada. Escolha o sabor.",tam:[["Carne mais Queijo",17],["Cheddar e Queijo",17],["Mussarela mais Presunto",17]]},
+ {s:"esp",n:"Lasanha Simples",p:17,img:"lasimples",d:"Lasanha na marmitinha, bem gratinada."},
 
  {s:"fds",n:"Banda de Tambaqui Assada",img:"banda",tag:"Fim de semana",d:"Banda de tambaqui assada na brasa.",tam:[["Completa (com acompanhamentos)",65],["Simples",60]],
    fixo:"Baião, Farofa, Maionese, Vinagrete, Banana frita, Limão, Pimenta",fixoSo:0},
@@ -383,7 +383,7 @@ async function lerPlanilha(){ if(!SHEET_ID) return;
       const tam=String(r.tamanhos||"").split(";").map(x=>{ const i=x.lastIndexOf("="); return i<0?null:[x.slice(0,i).trim(),num(x.slice(i+1))]; }).filter(t=>t&&!isNaN(t[1]));
       const o={s,n:r.prato,img:r.foto,d:r.descricao,tag:r.selo,off:!sim(r.disponivel)};
       if(tam.length){ o.tam=tam; o.fixo=r.acompanha; if(sim(r.acompanha_so_na_1a_opcao)&&nk(r.acompanha_so_na_1a_opcao)) o.fixoSo=0; const q=parseInt(r.qtd_opcionais); if(q) o.opc=q; }
-      else { o.p=num(r.preco); if(s!=="dia") o.tipo="dia"; if(r.acompanha) o.extra=r.acompanha; }
+      else { o.p=num(r.preco); if(s==="dia"){ if(r.acompanha) o.extra=r.acompanha; } else { if(r.acompanha) o.fixo=r.acompanha; const q=parseInt(r.qtd_opcionais); if(q) o.opc=q; } }
       return o; }).filter(o=>o.tam||!isNaN(o.p));
     if(ac&&ac.length) ACOMP=ac.filter(r=>r.opcao&&sim(r.disponivel)).map((r,i)=>({id:"op"+(i+1),nome:r.opcao,itens:r.itens,fds:!/^n/i.test(nk(r.so_fim_de_semana)||"nao")}));
     if(op&&op.length) OPCIONAIS=op.filter(r=>r.item&&sim(r.disponivel)).map(r=>r.item);
@@ -470,7 +470,8 @@ $("#addB").onclick=()=>{ if(!ABERTO) return; let item;
 /* ======================= carrinho ======================= */
 let MODO="entrega",PAG="",EDIT=false,GEO=null,PF=lsG("dmae2_perfil")||{};
 const sub=()=>CART.reduce((s,l)=>s+l.pr*l.q,0);
-const TAXA_CARTAO={"Débito":2,"Crédito":5};  // % — pode mudar na planilha (Config) const pctC=()=>TAXA_CARTAO[PAG]||0; const taxaC=()=>Math.round(sub()*pctC())/100;
+const TAXA_CARTAO={"Débito":2,"Crédito":5};  // % — pode mudar na planilha (Config)
+const pctC=()=>TAXA_CARTAO[PAG]||0; const taxaC=()=>Math.round(sub()*pctC())/100;
 function upd(){ const n=CART.reduce((s,l)=>s+l.q,0); $("#cN").textContent=n; $("#cT").textContent=brl(sub()); $("#cbar").classList.toggle("show",n>0);
   $("#lines").innerHTML=CART.map((l,i)=>`<div class="ln"><div><div style="font-weight:800">${esc(l.n)}</div><div class="s">${l.det.map(esc).join("<br>")}${l.det.length?"<br>":""}${brl(l.pr*l.q)}</div></div>
     <div class="mini"><button data-dec="${i}">−</button><span>${l.q}</span><button data-inc="${i}">+</button></div></div>`).join("");
