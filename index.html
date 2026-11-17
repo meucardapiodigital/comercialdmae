@@ -255,7 +255,7 @@ nav.cats{position:sticky;top:0;z-index:20;margin-top:18px;padding:10px 0;backgro
       <label class="chk"><input type="checkbox" id="pSv" checked> Salvar meus dados neste celular</label></div>
     <button class="geo" id="geoB" type="button">📍 Enviar minha localização</button><div id="geoI">Ajuda a calcular a taxa e o entregador a chegar rápido.</div><div class="notice" id="rotaN">⏰ Faça seu pedido antecipado! Primeira rota de entrega a partir das 10:50.</div></div>
   <div class="blk"><h4>Pagamento</h4><div class="chips" id="pag"><button class="ck" data-v="Pix">Pix</button><button class="ck" data-v="Débito">Cartão de débito</button><button class="ck" data-v="Crédito">Cartão de crédito</button><button class="ck" data-v="Dinheiro">Dinheiro</button></div>
-    <div class="notice" style="margin-top:10px">💳 <b>Pagamento no cartão:</b> é cobrada uma pequena taxa da maquininha — <b>débito +2%</b> e <b>crédito +5%</b>.</div>
+    <div class="notice" style="margin-top:10px">💳 <b>Pagamento no cartão:</b> é cobrada uma pequena taxa da maquininha — <b>débito +<span class="tdb">2</span>%</b> e <b>crédito +<span class="tcr">5</span>%</b>.</div>
     <div id="trB" hidden><label class="lbl" for="troco">Troco para quanto?</label><input class="inp" id="troco" inputmode="decimal" placeholder="Ex.: 100,00"></div></div>
   <div class="blk"><h4>Observações</h4><textarea class="inp" id="obs" rows="2" placeholder="Ex.: sem cebola, carne bem passada"></textarea></div>
   <div class="sum"><div><span>Subtotal</span><span id="sS"></span></div><div id="sT"><span>Entrega</span><span>conforme o endereço</span></div><div id="sF" style="display:none"><span id="sFl"></span><span id="sFv"></span></div><div class="tot"><span>Total</span><span id="sTo"></span></div></div>
@@ -370,11 +370,15 @@ async function aba(n){ const r=await fetch(`https://docs.google.com/spreadsheets
   const t=await r.text(); if(!r.ok||/^\s*</.test(t)) throw 0; return csv(t); }
 let ultima="";
 async function lerPlanilha(){ if(!SHEET_ID) return;
-  try{ const [cfg,pr,ac,op,ad,be,so]=await Promise.all(["Config","Pratos","Acompanhamentos","Opcionais","Adicionais","Bebidas","Sobremesas"].map(n=>aba(n).catch(()=>null)));
-    const sig=JSON.stringify([cfg,pr,ac,op,ad,be,so]); if(sig===ultima) return; ultima=sig;
+  try{ const [cfg,pr,ac,op,ad,be,so,po]=await Promise.all(["Config","Pratos","Acompanhamentos","Opcionais","Adicionais","Bebidas","Sobremesas","Porcoes"].map(n=>aba(n).catch(()=>null)));
+    const sig=JSON.stringify([cfg,pr,ac,op,ad,be,so,po]); if(sig===ultima) return; ultima=sig;
     const C={}; (cfg||[]).forEach(r=>{ if(r.campo) C[nk(r.campo)]=r.valor||""; });
     if(C.whatsapp) CONFIG.whatsapp=C.whatsapp.replace(/\D/g,""); if(C.endereco) CONFIG.endereco=C.endereco; if(C.feriado_hoje) CONFIG.feriado_hoje=C.feriado_hoje;
     if(C.valor_adicional&&!isNaN(num(C.valor_adicional))) VALOR_ADICIONAL=num(C.valor_adicional);
+    if(C.taxa_debito_pct!==undefined&&!isNaN(num(C.taxa_debito_pct))) TAXA_CARTAO["Débito"]=num(C.taxa_debito_pct);
+    if(C.taxa_credito_pct!==undefined&&!isNaN(num(C.taxa_credito_pct))) TAXA_CARTAO["Crédito"]=num(C.taxa_credito_pct);
+    if(po&&po.length){ PORCOES=po.filter(r=>r.porcao&&sim(r.disponivel)).map(r=>[r.porcao,/banana/i.test(r.porcao)?"🍌":/batata/i.test(r.porcao)?"🍟":"🍽️"]);
+      const vs=String((po.find(r=>r.valores)||{}).valores||"").split(/[;\/]/).map(num).filter(v=>!isNaN(v)&&v>0); if(vs.length) VALORES_PORCAO=vs; }
     if(pr&&pr.length) PRATOS=pr.filter(r=>r.prato).map(r=>{ const sec=nk(r.secao); const s=sec.startsWith("fim")||sec==="fds"?"fds":sec.startsWith("esp")?"esp":"dia";
       const tam=String(r.tamanhos||"").split(";").map(x=>{ const i=x.lastIndexOf("="); return i<0?null:[x.slice(0,i).trim(),num(x.slice(i+1))]; }).filter(t=>t&&!isNaN(t[1]));
       const o={s,n:r.prato,img:r.foto,d:r.descricao,tag:r.selo,off:!sim(r.disponivel)};
@@ -466,7 +470,7 @@ $("#addB").onclick=()=>{ if(!ABERTO) return; let item;
 /* ======================= carrinho ======================= */
 let MODO="entrega",PAG="",EDIT=false,GEO=null,PF=lsG("dmae2_perfil")||{};
 const sub=()=>CART.reduce((s,l)=>s+l.pr*l.q,0);
-const TAXA_CARTAO={"Débito":2,"Crédito":5}; const pctC=()=>TAXA_CARTAO[PAG]||0; const taxaC=()=>Math.round(sub()*pctC())/100;
+const TAXA_CARTAO={"Débito":2,"Crédito":5};  // % — pode mudar na planilha (Config) const pctC=()=>TAXA_CARTAO[PAG]||0; const taxaC=()=>Math.round(sub()*pctC())/100;
 function upd(){ const n=CART.reduce((s,l)=>s+l.q,0); $("#cN").textContent=n; $("#cT").textContent=brl(sub()); $("#cbar").classList.toggle("show",n>0);
   $("#lines").innerHTML=CART.map((l,i)=>`<div class="ln"><div><div style="font-weight:800">${esc(l.n)}</div><div class="s">${l.det.map(esc).join("<br>")}${l.det.length?"<br>":""}${brl(l.pr*l.q)}</div></div>
     <div class="mini"><button data-dec="${i}">−</button><span>${l.q}</span><button data-inc="${i}">+</button></div></div>`).join("");
@@ -474,7 +478,7 @@ function upd(){ const n=CART.reduce((s,l)=>s+l.q,0); $("#cN").textContent=n; $("
   $("#sTo").textContent=brl(sub()+taxaC())+(MODO==="entrega"?" + entrega":""); $("#sT").style.display=MODO==="entrega"?"":"none";
   if(!n&&$("#cart").classList.contains("show")) hide(); }
 const pfOk=()=>PF.nome&&PF.tel&&(MODO!=="entrega"||PF.end);
-function drawC(){ $$("#modo .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===MODO)); $$("#pag .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===PAG));
+function drawC(){ $$(".tdb").forEach(e=>e.textContent=String(TAXA_CARTAO["Débito"]).replace(".",",")); $$(".tcr").forEach(e=>e.textContent=String(TAXA_CARTAO["Crédito"]).replace(".",",")); $$("#modo .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===MODO)); $$("#pag .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===PAG));
   $("#trB").hidden=PAG!=="Dinheiro"; const r=pfOk()&&!EDIT; $("#pfF").style.display=r?"none":""; $("#endB").style.display=MODO==="entrega"?"":"none";
   $("#geoB").style.display=$("#geoI").style.display=$("#rotaN").style.display=MODO==="entrega"?"":"none"; $("#pfT").textContent=MODO==="entrega"?"Dados para entrega":"Seus dados";
   $("#pfR").innerHTML=r?`<div class="card">Olá, <b>${esc(PF.nome)}</b>! 👋<br>📱 ${esc(PF.tel)}${MODO==="entrega"?`<br>📍 ${esc(PF.end)}${PF.bai?` — ${esc(PF.bai)}`:""}`:""}</div><button class="lnk" id="edit">Alterar meus dados</button>`:"";
