@@ -228,7 +228,7 @@ nav.cats{position:sticky;top:0;z-index:20;margin-top:18px;padding:10px 0;backgro
   <nav class="cats"><div class="crow" id="cats">
     <button class="chip on" data-go="s-dia">Pratos do dia</button><button class="chip" data-go="s-esp">Especiais</button><button class="chip" data-go="s-fds">Fim de semana</button>
     <button class="chip" data-go="s-beb">Bebidas</button><button class="chip" data-go="s-sob">Sobremesas</button></div></nav>
-  <section class="sec" id="s-dia"><div class="sh reveal"><small>Feito na hora</small><h2>Pratos do Dia</h2><div class="orn"><i></i></div><p>Acompanha arroz, feijão e macarrão + 2 opcionais à sua escolha</p><div class="notice" style="margin-top:10px">➕ Quer turbinar seu prato? Adicione <b>ovo, calabresa ou batata frita</b> por <b>+ R$ 3,00</b> cada.</div></div><div id="lDia"></div></section>
+  <section class="sec" id="s-dia"><div class="sh reveal"><small>Feito na hora</small><h2>Pratos do Dia</h2><div class="orn"><i></i></div><p>Acompanha arroz, feijão e macarrão + até 2 opcionais à sua escolha</p><div class="notice" style="margin-top:10px">➕ Quer turbinar seu prato? Adicione <b>ovo, calabresa ou batata frita</b> por <b>+ R$ 3,00</b> cada.</div></div><div id="lDia"></div></section>
   <section class="sec" id="s-esp"><div class="sh reveal"><small>Da casa</small><h2>Especiais</h2><div class="orn"><i></i></div></div><div id="lEsp"></div></section>
   <section class="sec" id="s-fds"><div class="sh reveal"><small>Sábado · Domingo · Feriados</small><h2>Fim de Semana</h2><div class="orn"><i></i></div><p id="fdsTxt"></p></div><div id="lFds"></div></section>
   <section class="sec" id="s-beb"><div class="sh reveal"><small>Geladinhas</small><h2>Bebidas</h2><div class="orn"><i></i></div></div><div class="paper reveal" id="pBeb"></div></section>
@@ -335,7 +335,7 @@ $("#fdsTxt").textContent=FDS?"Disponíveis hoje! Aproveite.":"Disponíveis somen
 PRATOS.forEach((p,i)=>{ p.id="p"+i; p.tipo=p.tipo||(p.s==="dia"?"dia":"esp"); p.fdsLock=p.s==="fds"&&!FDS; p.lock=p.fdsLock||!!p.off; p.tams=p.tam||[["Prato",p.p]]; p.min=Math.min(...p.tams.map(t=>t[1])); });
 dishHTML=(p,i)=>`<button class="dish reveal${p.lock?" lock":""}" style="--d:${(i%3)*.06}s" data-open="${p.id}">
   <div class="ph"><img src="${fotoDe(p.img)}" alt="${esc(p.n)}" loading="lazy" decoding="async"></div>
-  <div class="tx"><h3>${esc(p.n)}</h3><div class="ds">${esc(p.d||(p.tipo==="dia"?"Com acompanhamentos e 2 opcionais":""))}</div>
+  <div class="tx"><h3>${esc(p.n)}</h3><div class="ds">${esc(p.d||(p.tipo==="dia"?"Com acompanhamentos e até 2 opcionais":""))}</div>
   <div class="rw"><span class="pr">${brl(p.min)}</span><span class="go">${p.off?"Esgotado hoje":p.lock?"Só fim de semana":"Escolher →"}</span></div></div>
   ${p.lock?"":p.s==="fds"?`<span class="wk">Hoje!</span>`:""}</button>`;
 bigHTML=p=>`<button class="big reveal${p.lock?" lock":""}" data-open="${p.id}"><div class="im"><img src="${fotoDe(p.img)}" alt="${esc(p.n)}" loading="lazy" decoding="async"><div class="glow"></div>
@@ -422,7 +422,7 @@ const porTot=()=>Object.values(SEL.por||{}).reduce((a,v)=>a+(v||0),0);
 function openP(id){ const p=PRATOS.find(x=>x.id===id); if(!p) return; CUR={k:"p",p}; SEL={t:0,a:FDS?null:"op1",o:[],x:[],pt:"",por:{}}; if(FDS) SEL.a="op1"; Q=1;
   $("#dImg").src=fotoDe(p.img); drawP(); show("#det"); $("#sbar").classList.add("show"); }
 function openS(id){ const s=SIMPLES[id]; CUR={k:"s",s,id}; SEL={f:s.fl?s.fl[0]:""}; Q=1; $("#dImg").src=""; drawS(); show("#det"); $("#sbar").classList.add("show"); }
-function drawP(){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0), falta=nOpc?Math.max(0,nOpc-SEL.o.length):0, comp=!p.fixoSo&&p.fixoSo!==undefined?SEL.t===0:true;
+function drawP(){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0), falta=nOpc&&!SEL.o.length?1:0, comp=!p.fixoSo&&p.fixoSo!==undefined?SEL.t===0:true;
   $(".sheet#det .hi").style.display="";
   $("#dC").innerHTML=`<h2>${esc(p.n)}</h2><p class="dsc">${esc(p.d||"")}</p>
   ${p.off?`<div class="notice">Este prato acabou por hoje.</div>`:p.fdsLock?`<div class="notice">Este prato sai somente aos sábados, domingos e feriados.</div>`:""}
@@ -431,7 +431,7 @@ function drawP(){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0), falta=nOpc?Ma
      return `<button class="op${SEL.a===a.id?" on":""}" data-a="${a.id}" ${off?"disabled":""}><span class="l"><span class="rd"></span><span><b>${a.nome}</b><small>${a.itens}${off?" · só sáb, dom e feriados":""}</small></span></span></button>`; }).join("")}</div>
      ${p.extra?`<div class="fix" style="margin-top:10px">${lista(p.extra).map(x=>`<div>${esc(x)}</div>`).join("")}</div>`:""}</div>`:""}
   ${p.fixo&&(p.fixoSo===undefined||SEL.t===0)?`<div class="blk"><h4>Acompanha</h4><div class="fix">${lista(p.fixo).map(x=>`<div>${esc(x)}</div>`).join("")}</div></div>`:""}
-  ${nOpc?`<div class="blk"><h4>Opcionais — escolha ${nOpc} <span class="${falta?"req":"ok"}">${SEL.o.length}/${nOpc}${falta?"":" ✓"}</span></h4><div class="chips">${OPCIONAIS.map(o=>{ const on=SEL.o.includes(o);
+  ${nOpc?`<div class="blk"><h4>Opcionais — escolha 1 ou ${nOpc} <span class="${falta?"req":"ok"}">${SEL.o.length}/${nOpc}${falta?"":" ✓"}</span></h4><div class="chips">${OPCIONAIS.map(o=>{ const on=SEL.o.includes(o);
      return `<button class="ck${on?" on":""}" data-o="${esc(o)}" ${!on&&SEL.o.length>=nOpc?"disabled":""}>${esc(o)}</button>`; }).join("")}</div></div>`:""}
   ${nOpc?`<div class="blk"><h4>Adicionais <span>+ ${brl(VALOR_ADICIONAL)} cada</span></h4>
      <p style="color:var(--muted);font-size:13px;margin:-4px 0 10px">Opcional: cada adicional acrescenta ${brl(VALOR_ADICIONAL)} ao prato.</p>
@@ -441,7 +441,7 @@ function drawP(){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0), falta=nOpc?Ma
      ${SEL.pt?`<p style="color:var(--muted);font-size:13px;margin:10px 0 8px">Valor da porção de ${esc(SEL.pt.toLowerCase())}:</p><div class="chips">${VALORES_PORCAO.map(v=>`<button class="ck${SEL.por[SEL.pt]===v?" on":""}" data-pv="${v}">${brl(v)}</button>`).join("")}</div>`:""}`:""}</div>`:""}
   <div class="blk"><h4>Observação do prato</h4><input class="inp" id="dObs" placeholder="Ex.: sem cebola" value="${esc(SEL.obs||"")}"></div>`;
   const pr=p.tams[SEL.t][1]+SEL.x.length*VALOR_ADICIONAL+porTot(); $("#qn").textContent=Q; $("#addP").textContent=brl(pr*Q);
-  $("#addT").textContent=!ABERTO?"Indisponível agora":p.off?"Esgotado hoje":p.lock?"Só fim de semana":falta?`Escolha mais ${falta} opcional${falta>1?"is":""}`:"Adicionar"; $("#addB").classList.toggle("dis",!ABERTO||p.lock||!!falta); }
+  $("#addT").textContent=!ABERTO?"Indisponível agora":p.off?"Esgotado hoje":p.lock?"Só fim de semana":falta?"Escolha pelo menos 1 opcional":"Adicionar"; $("#addB").classList.toggle("dis",!ABERTO||p.lock||!!falta); }
 function drawS(){ const s=CUR.s; $(".sheet#det .hi").style.display="none";
   $("#dC").innerHTML=`<h2 style="margin-top:22px;padding-right:50px">${esc(s.n)}</h2><button class="xb" data-close aria-label="Fechar" style="top:14px">✕</button>
   ${s.fl?`<div class="blk"><h4>Sabor <span class="req">Escolha 1</span></h4><div class="chips">${s.fl.map(f=>`<button class="ck${SEL.f===f?" on":""}" data-f="${esc(f)}">${esc(f)}</button>`).join("")}</div></div>`:""}`;
@@ -457,7 +457,7 @@ $("#qm").onclick=()=>{Q=Math.max(1,Q-1); const ob=$("#dObs"); if(ob) SEL.obs=ob.
 let CART=[];
 $("#addB").onclick=()=>{ if(!ABERTO) return; let item;
   if(CUR.k==="p"){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0); if(p.lock) return;
-    if(nOpc&&SEL.o.length<nOpc){ $(".chips")?.scrollIntoView({behavior:"smooth",block:"center"}); return; }
+    if(nOpc&&SEL.o.length<1){ $(".chips")?.scrollIntoView({behavior:"smooth",block:"center"}); return; }
     const t=p.tams[SEL.t], det=[]; if(p.tams.length>1) det.push(t[0]);
     if(p.tipo==="dia"){ const a=ACOMP.find(x=>x.id===SEL.a); det.push(`${a.nome}: ${a.itens}`); }
     if(SEL.o.length) det.push("Opcionais: "+SEL.o.join(", "));
