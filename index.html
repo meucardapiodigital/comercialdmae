@@ -184,10 +184,18 @@ nav.cats{position:sticky;top:0;z-index:20;margin-top:18px;padding:10px 0;backgro
 .ln{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #2e2016}
 .ln .s{color:var(--muted);font-size:12.5px;margin-top:3px;line-height:1.4}
 .mini{display:flex;align-items:center;border:1px solid #3a281c;border-radius:999px}.mini button{width:34px;height:34px;font-weight:800;font-size:18px}.mini span{min-width:18px;text-align:center;font-weight:800}
-.lg{font-size:12.5px;font-weight:800;color:var(--gold);margin:12px 0 7px;letter-spacing:.3px}.lg:first-child{margin-top:2px}
-.ck .tx{font-weight:600;opacity:.75;font-size:12.5px;margin-left:4px}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-#locs.err{animation:none;outline:2px solid #ff5a3c;outline-offset:6px;border-radius:12px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.op{padding:14px 10px;border-radius:14px;border:1.5px solid #3a281c;background:#1b120d;font-weight:800;font-size:14.5px;color:var(--cream)}
+.op.on{background:var(--gold);border-color:var(--gold);color:#1a0f0a}
+.bx{display:none}.bx.on{display:block;animation:bxIn .3s ease}@keyframes bxIn{from{opacity:0;transform:translateY(6px)}}
+.conds{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cond{padding:12px;border-radius:12px;border:1.5px solid #3a281c;background:#0f0906;font-weight:700;font-size:14px;text-align:left;display:flex;align-items:center;gap:9px;color:var(--cream)}
+.cond:before{content:"";width:15px;height:15px;border-radius:50%;border:2px solid var(--gold);flex:none}
+.cond.on{border-color:var(--gold);background:rgba(212,170,92,.1)}.cond.on:before{background:var(--gold);box-shadow:inset 0 0 0 3px #0f0906}
+.portaria{margin-top:12px;padding:12px 14px;border-radius:13px;background:rgba(212,170,92,.08);border:1px solid rgba(212,170,92,.45);font-size:13.5px;line-height:1.5;color:#ffe2b0}
+select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
+#conds.err,#tipos.err{animation:shake .3s;outline:2px solid #e5484d;outline-offset:5px;border-radius:12px}
 .card{background:#1b120d;border:1px solid #2e2016;border-radius:14px;padding:13px 15px;font-size:14px;line-height:1.55}
 .card b{color:var(--gold2)}
 .lnk{color:var(--gold2);text-decoration:underline;font-weight:700;font-size:14px;margin-top:8px}
@@ -253,11 +261,16 @@ nav.cats{position:sticky;top:0;z-index:20;margin-top:18px;padding:10px 0;backgro
   <div class="blk"><h4 id="pfT">Seus dados</h4><div id="pfR"></div>
     <div id="pfF"><label class="lbl" for="pNome">Nome</label><input class="inp" id="pNome" autocomplete="name" placeholder="Seu nome">
       <label class="lbl" for="pTel">WhatsApp</label><input class="inp" id="pTel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(92) 9 9999-9999">
-      <div id="endB"><label class="lbl">Onde vamos entregar? <span style="font-weight:500">(a taxa já entra no total)</span></label><div id="locs"></div>
-        <div id="bxCond"><div class="r2"><div><label class="lbl" for="pBloco">Bloco</label><input class="inp" id="pBloco" placeholder="Bloco"></div><div><label class="lbl" for="pApto">Apartamento</label><input class="inp" id="pApto" inputmode="numeric" placeholder="Apto"></div></div>
-          <div class="notice">🛎️ Avise a portaria do seu condomínio que tem uma entrega do <b>Comercial D'Mãe</b>, assim o entregador é liberado sem demora.</div></div>
-        <div id="bxRua"><label class="lbl" for="pEnd">Endereço (rua e número)</label><input class="inp" id="pEnd" autocomplete="street-address" placeholder="Ex.: Rua das Flores, 120"></div>
-        <label class="lbl" for="pRef">Ponto de referência</label><input class="inp" id="pRef" placeholder="Ex.: perto da escola"></div>
+      <div id="endB"><label class="lbl">Onde vamos entregar?</label>
+        <div class="opts" id="tipos"><button type="button" class="op" data-tipo="casa">🏠 Casa / Bairro</button><button type="button" class="op" data-tipo="cond">🏢 Condomínio</button></div>
+        <div id="bxCasa" class="bx">
+          <label class="lbl" for="pBai">Bairro</label><select class="inp" id="pBai"></select>
+          <label class="lbl" for="pEnd">Endereço (rua e número)</label><input class="inp" id="pEnd" autocomplete="street-address" placeholder="Ex.: Rua das Flores, 120">
+          <label class="lbl" for="pRef">Ponto de referência</label><input class="inp" id="pRef" placeholder="Ex.: perto da escola"></div>
+        <div id="bxCond" class="bx">
+          <label class="lbl">Qual condomínio? <span style="font-weight:500">· taxa R$ 5,00</span></label><div class="conds" id="conds"></div>
+          <div class="r2" id="bxBA"><div><label class="lbl" for="pBloco">Bloco</label><input class="inp" id="pBloco" placeholder="Bloco"></div><div><label class="lbl" for="pApto">Apartamento</label><input class="inp" id="pApto" inputmode="numeric" placeholder="Apto"></div></div>
+          <div class="portaria">🛎️ <b>Importante:</b> deixe a <b>portaria liberada</b> para o entregador do <b>Comercial D'Mãe</b>, avisando que você tem uma entrega chegando. Assim ele entra sem demora.</div></div></div>
       <label class="chk"><input type="checkbox" id="pSv" checked> Salvar meus dados neste celular</label></div>
     <button class="geo" id="geoB" type="button">📍 Enviar minha localização</button><div id="geoI">Ajuda o entregador a chegar mais rápido.</div><div class="notice" id="rotaN">⏰ Faça seu pedido antecipado! Primeira rota de entrega a partir das 10:50.</div></div>
   <div class="blk"><h4>Pagamento</h4><div class="chips" id="pag"><button class="ck" data-v="Pix">Pix</button><button class="ck" data-v="Débito">Cartão de débito</button><button class="ck" data-v="Crédito">Cartão de crédito</button><button class="ck" data-v="Dinheiro">Dinheiro</button></div>
@@ -487,16 +500,18 @@ function upd(){ const n=CART.reduce((s,l)=>s+l.q,0); $("#cN").textContent=n; $("
   if(!n&&$("#cart").classList.contains("show")) hide(); }
 /* ---- locais de entrega e taxas ---- */
 const LOCAIS=[
- {g:"🏢 Condomínios",t:5,c:1,l:["Harmonia","Vida Nova","Liberdade","Felicidade","Violeta","Jasmim","Verona"]},
- {g:"🏘️ Bairro Lago Azul",t:5,l:["Ismail Aziz","São João","Granja São Pedro 1","Granja São Pedro 2","Granja São Pedro 3","Comunidade Aliança com Deus","Comunidade Agrovila","Comunidade Renascer"]},
- {g:"📍 Outros bairros",l:[["23 de Setembro",3],["União da Vitória",8],["Viver Melhor",10],["Santa Etelvina",10],["Comunidade Bom Jesus",10]]}];
+ {g:"Condomínios",t:5,c:1,l:["Harmonia","Vida Nova","Liberdade","Felicidade","Violeta","Jasmim","Verona"]},
+ {g:"Bairro Lago Azul",t:5,l:["Ismail Aziz","São João","Granja São Pedro 1","Granja São Pedro 2","Granja São Pedro 3","Comunidade Aliança com Deus","Comunidade Agrovila","Comunidade Renascer"]},
+ {g:"Outros bairros",l:[["23 de Setembro",3],["União da Vitória",8],["Viver Melhor",10],["Santa Etelvina",10],["Comunidade Bom Jesus",10]]}];
 const LOC_MAP={}; LOCAIS.forEach(G=>G.l.forEach(x=>{ const [n,t]=Array.isArray(x)?x:[x,G.t]; LOC_MAP[n]={n,t,c:!!G.c,g:G.g}; }));
 const nomeLoc=L=>L?(L.c?"Condomínio "+L.n:L.n):"";
-let LOC=(PF.loc&&LOC_MAP[PF.loc])||null;
+let LOC=(PF.loc&&LOC_MAP[PF.loc])||null, TIPO=LOC?(LOC.c?"cond":"casa"):"";
 const taxaE=()=>MODO==="entrega"&&LOC?LOC.t:0;
-function drawLoc(){ $("#locs").innerHTML=LOCAIS.map(G=>`<div class="lg">${G.g}</div><div class="chips">`+G.l.map(x=>{ const n=Array.isArray(x)?x[0]:x, L=LOC_MAP[n];
-    return `<button class="ck${LOC&&LOC.n===n?" on":""}" data-loc="${esc(n)}">${esc(n)}<span class="tx">${brl(L.t)}</span></button>`; }).join("")+"</div>").join("");
-  $("#bxCond").style.display=LOC&&LOC.c?"":"none"; $("#bxRua").style.display=LOC&&LOC.c?"none":""; }
+const nomes=G=>G.l.map(x=>Array.isArray(x)?x[0]:x);
+function drawLoc(){ $$("[data-tipo]").forEach(b=>b.classList.toggle("on",b.dataset.tipo===TIPO)); $("#bxCasa").classList.toggle("on",TIPO==="casa"); $("#bxCond").classList.toggle("on",TIPO==="cond");
+  $("#pBai").innerHTML=`<option value="">Escolha seu bairro</option>`+LOCAIS.filter(G=>!G.c).map(G=>`<optgroup label="${G.g}">`+nomes(G).map(n=>`<option value="${esc(n)}"${LOC&&LOC.n===n?" selected":""}>${esc(n)} — ${brl(LOC_MAP[n].t)}</option>`).join("")+"</optgroup>").join("");
+  $("#conds").innerHTML=nomes(LOCAIS.find(G=>G.c)).map(n=>`<button type="button" class="cond${LOC&&LOC.n===n?" on":""}" data-loc="${esc(n)}">${esc(n)}</button>`).join("");
+  $("#bxBA").style.display=$("#bxBA").nextElementSibling.style.display=LOC&&LOC.c?"":"none"; }
 const pfOk=()=>PF.nome&&PF.tel&&(MODO!=="entrega"||(PF.loc&&LOC_MAP[PF.loc]&&(LOC_MAP[PF.loc].c?PF.bloco&&PF.apto:PF.end)));
 function drawC(){ $$(".tdb").forEach(e=>e.textContent=String(TAXA_CARTAO["Débito"]).replace(".",",")); $$(".tcr").forEach(e=>e.textContent=String(TAXA_CARTAO["Crédito"]).replace(".",",")); $$("#modo .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===MODO)); $$("#pag .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===PAG));
   $("#trB").hidden=PAG!=="Dinheiro"; const r=pfOk()&&!EDIT; $("#pfF").style.display=r?"none":""; $("#endB").style.display=MODO==="entrega"?"":"none";
@@ -510,7 +525,8 @@ const er=el=>{ el.classList.remove("err"); void el.offsetWidth; el.classList.add
 $("#send").onclick=()=>{ if(!CART.length||!ABERTO) return; const r=$("#pfF").style.display==="none";
   const p=r?{...PF}:{nome:$("#pNome").value.trim(),tel:$("#pTel").value.trim(),end:$("#pEnd").value.trim(),ref:$("#pRef").value.trim(),bloco:$("#pBloco").value.trim(),apto:$("#pApto").value.trim(),loc:LOC?LOC.n:""};
   if(!r){ if(!p.nome) return er($("#pNome")); if(p.tel.replace(/\D/g,"").length<10) return er($("#pTel"));
-    if(MODO==="entrega"){ if(!LOC){ $("#locs").scrollIntoView({behavior:"smooth",block:"center"}); return er($("#locs")); }
+    if(MODO==="entrega"){ if(!TIPO){ $("#tipos").scrollIntoView({behavior:"smooth",block:"center"}); return er($("#tipos")); }
+      if(!LOC){ const z=TIPO==="cond"?$("#conds"):$("#pBai"); z.scrollIntoView({behavior:"smooth",block:"center"}); return er(z); }
       if(LOC.c){ if(!p.bloco) return er($("#pBloco")); if(!p.apto) return er($("#pApto")); } else if(!p.end) return er($("#pEnd")); } }
   if(!PAG){ $$("#pag .ck").forEach(er); return; }
   if(!r&&$("#pSv").checked){ PF={...PF,...p}; lsS("dmae2_perfil",PF); }
@@ -529,7 +545,10 @@ document.addEventListener("click",e=>{ const o=e.target.closest("[data-open]"),s
   if(e.target.id==="edit"){ EDIT=true; drawC(); } });
 document.addEventListener("input",e=>e.target.classList?.remove("err"));
 $("#ov").onclick=hide; $("#openC").onclick=()=>{ drawC(); show("#cart"); };
-$("#locs").onclick=e=>{ const b=e.target.closest("[data-loc]"); if(b){ LOC=LOC_MAP[b.dataset.loc]; $("#locs").classList.remove("err"); drawLoc(); upd(); } };
+$("#endB").onclick=e=>{ const t=e.target.closest("[data-tipo]"),b=e.target.closest("[data-loc]");
+  if(t&&t.dataset.tipo!==TIPO){ TIPO=t.dataset.tipo; $("#tipos").classList.remove("err"); if(LOC&&(LOC.c?"cond":"casa")!==TIPO) LOC=null; drawLoc(); upd(); }
+  if(b){ LOC=LOC_MAP[b.dataset.loc]; $("#conds").classList.remove("err"); drawLoc(); upd(); setTimeout(()=>$("#pBloco").focus(),50); } };
+$("#pBai").onchange=e=>{ LOC=LOC_MAP[e.target.value]||null; e.target.classList.remove("err"); upd(); };
 $("#modo").onclick=e=>{ const b=e.target.closest(".ck"); if(b){ MODO=b.dataset.v; drawC(); } };
 $("#pag").onclick=e=>{ const b=e.target.closest(".ck"); if(b){ PAG=b.dataset.v; drawC(); } };
 </script>
