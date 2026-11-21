@@ -275,7 +275,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <button class="geo" id="geoB" type="button">📍 Enviar minha localização</button><div id="geoI">Ajuda o entregador a chegar mais rápido.</div><div class="notice" id="rotaN">⏰ Faça seu pedido antecipado! Primeira rota de entrega a partir das 10:50.</div></div>
   <div class="blk"><h4>Pagamento</h4><div class="chips" id="pag"><button class="ck" data-v="Pix">Pix</button><button class="ck" data-v="Débito">Cartão de débito</button><button class="ck" data-v="Crédito">Cartão de crédito</button><button class="ck" data-v="Dinheiro">Dinheiro</button></div>
     <div class="notice" style="margin-top:10px">💳 <b>Pagamento no cartão:</b> é cobrada uma pequena taxa da maquininha — <b>débito +<span class="tdb">2</span>%</b> e <b>crédito +<span class="tcr">5</span>%</b>.</div>
-    <div id="trB" hidden><label class="lbl" for="troco">Troco para quanto?</label><input class="inp" id="troco" inputmode="decimal" placeholder="Ex.: 100,00"></div></div>
+    <div id="pixB" hidden style="margin-top:10px"><div class="notice" style="line-height:1.5">💠 <b>Pague com Pix</b><br>Chave (celular): <b style="font-size:17px;letter-spacing:.3px">(92) 99227-0395</b><br>Moranil Santos De Oliveira Junior · Nubank<div style="margin-top:10px"><button type="button" class="ck" id="pixCp">📋 Copiar chave Pix</button></div><div style="margin-top:8px">Faça o Pix do <b>valor total</b> e envie o <b>comprovante</b> no WhatsApp junto com o pedido.</div></div></div><div id="trB" hidden><label class="lbl" for="troco">Troco para quanto?</label><input class="inp" id="troco" inputmode="decimal" placeholder="Ex.: 100,00"></div></div>
   <div class="blk"><h4>Observações</h4><textarea class="inp" id="obs" rows="2" placeholder="Ex.: sem cebola, carne bem passada"></textarea></div>
   <div class="sum"><div><span>Subtotal</span><span id="sS"></span></div><div id="sT"><span id="sTl">Entrega</span><span id="sTv">escolha o local</span></div><div id="sF" style="display:none"><span id="sFl"></span><span id="sFv"></span></div><div class="tot"><span>Total</span><span id="sTo"></span></div></div>
   <button class="send" id="send">Enviar pedido pelo WhatsApp</button>
@@ -473,7 +473,7 @@ $("#dC").addEventListener("click",e=>{ const t=e.target.closest("[data-t]"),a=e.
   if(t||a||o||f||x||bn){ const ob=$("#dObs"); if(ob) SEL.obs=ob.value; CUR.k==="p"?drawP():drawS(); } });
 $("#qp").onclick=()=>{Q=Math.min(20,Q+1); const ob=$("#dObs"); if(ob) SEL.obs=ob.value; CUR.k==="p"?drawP():drawS();};
 $("#qm").onclick=()=>{Q=Math.max(1,Q-1); const ob=$("#dObs"); if(ob) SEL.obs=ob.value; CUR.k==="p"?drawP():drawS();};
-let CART=[];
+/* Chave Pix mostrada quando o cliente escolhe Pix */ const PIX={chave:"+5592992270395",nome:"Moranil Santos De Oliveira Junior",banco:"Nubank"}; $("#pixCp").onclick=async e=>{ const b=e.currentTarget; try{ await navigator.clipboard.writeText(PIX.chave); }catch(_){ const i=document.createElement("textarea"); i.value=PIX.chave; document.body.appendChild(i); i.select(); try{document.execCommand("copy");}catch(__){} i.remove(); } b.textContent="Chave copiada!"; b.classList.add("on"); setTimeout(()=>{ b.textContent="📋 Copiar chave Pix"; b.classList.remove("on"); },2500); }; let CART=[];
 $("#addB").onclick=()=>{ if(!ABERTO) return; let item;
   if(CUR.k==="p"){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0); if(p.lock) return;
     if(nOpc&&SEL.o.length<1){ $(".chips")?.scrollIntoView({behavior:"smooth",block:"center"}); return; }
@@ -514,7 +514,7 @@ function drawLoc(){ $$("[data-tipo]").forEach(b=>b.classList.toggle("on",b.datas
   $("#bxBA").style.display=$("#bxBA").nextElementSibling.style.display=LOC&&LOC.c?"":"none"; }
 const pfOk=()=>PF.nome&&PF.tel&&(MODO!=="entrega"||(PF.loc&&LOC_MAP[PF.loc]&&(LOC_MAP[PF.loc].c?PF.bloco&&PF.apto:PF.end)));
 function drawC(){ $$(".tdb").forEach(e=>e.textContent=String(TAXA_CARTAO["Débito"]).replace(".",",")); $$(".tcr").forEach(e=>e.textContent=String(TAXA_CARTAO["Crédito"]).replace(".",",")); $$("#modo .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===MODO)); $$("#pag .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===PAG));
-  $("#trB").hidden=PAG!=="Dinheiro"; const r=pfOk()&&!EDIT; $("#pfF").style.display=r?"none":""; $("#endB").style.display=MODO==="entrega"?"":"none";
+  $("#trB").hidden=PAG!=="Dinheiro"; $("#pixB").hidden=PAG!=="Pix"; const r=pfOk()&&!EDIT; $("#pfF").style.display=r?"none":""; $("#endB").style.display=MODO==="entrega"?"":"none";
   $("#geoB").style.display=$("#geoI").style.display=$("#rotaN").style.display=MODO==="entrega"?"":"none"; $("#pfT").textContent=MODO==="entrega"?"Dados para entrega":"Seus dados";
   $("#pfR").innerHTML=r?`<div class="card">Olá, <b>${esc(PF.nome)}</b>! 👋<br>📱 ${esc(PF.tel)}${MODO==="entrega"&&LOC?`<br>📍 ${esc(nomeLoc(LOC))}${LOC.c?` · Bloco ${esc(PF.bloco)} · Apto ${esc(PF.apto)}`:` — ${esc(PF.end)}`}${PF.ref?`<br>Ref.: ${esc(PF.ref)}`:""}<br>🛵 Taxa de entrega: <b>${brl(LOC.t)}</b>`:""}</div><button class="lnk" id="edit">Alterar meus dados</button>`:"";
   if(!r) [["Nome","nome"],["Tel","tel"],["End","end"],["Ref","ref"],["Bloco","bloco"],["Apto","apto"]].forEach(([a,b])=>{ const el=$("#p"+a); if(!el.value) el.value=PF[b]||""; }); drawLoc(); upd(); }
@@ -533,7 +533,7 @@ $("#send").onclick=()=>{ if(!CART.length||!ABERTO) return; const r=$("#pfF").sty
   let m=`🔥 *PEDIDO — COMERCIAL D'MÃE*\n${MODO==="entrega"?"🛵 Entrega":"🏠 Retirada no local"}\n\n`+CART.map(l=>`• ${l.q}x *${l.n}*${l.det.length?"\n   "+l.det.join("\n   "):""}\n   ${brl(l.pr*l.q)}`).join("\n");
   m+=`\n\nSubtotal: ${brl(sub())}${pctC()?`\nTaxa do cartão (${PAG.toLowerCase()} ${pctC()}%): ${brl(taxaC())}`:""}${MODO==="entrega"?`\nTaxa de entrega (${nomeLoc(LOC)}): ${brl(LOC.t)}`:""}\n*Total: ${brl(sub()+taxaC()+taxaE())}*\n\n👤 ${p.nome}\n📱 ${p.tel}`;
   if(MODO==="entrega"){ m+=LOC.c?`\n🏢 *${nomeLoc(LOC)}*\n   Bloco ${p.bloco} · Apto ${p.apto}`:`\n📍 ${p.end} — *${LOC.n}*`; if(p.ref) m+=`\n   Ref.: ${p.ref}`; if(GEO) m+=`\n🗺️ Localização: https://maps.google.com/?q=${GEO.lat},${GEO.lng}`; }
-  m+=`\n💳 Pagamento: ${PAG==="Débito"||PAG==="Crédito"?"Cartão de "+PAG.toLowerCase():PAG}`; const t=$("#troco").value.trim(); if(PAG==="Dinheiro"&&t) m+=` (troco para R$ ${t})`; const o=$("#obs").value.trim(); if(o) m+=`\n📝 Obs.: ${o}`;
+  m+=`\n💳 Pagamento: ${PAG==="Débito"||PAG==="Crédito"?"Cartão de "+PAG.toLowerCase():PAG}`; const t=$("#troco").value.trim(); if(PAG==="Dinheiro"&&t) m+=` (troco para R$ ${t})`; const o=$("#obs").value.trim(); if(o) m+=`\n📝 Obs.: ${o}`; if(PAG==="Pix") m+=`\n\n💠 Chave Pix: ${PIX.chave} (${PIX.nome} · ${PIX.banco})\n📎 Vou enviar o comprovante do Pix aqui nesta conversa.`;
   location.href=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(m)}`; };
 
 function show(s){ $$(".sheet").forEach(x=>x.classList.remove("show")); $(s).classList.add("show"); $("#ov").classList.add("show"); document.body.style.overflow="hidden"; $(s).scrollTop=0; }
