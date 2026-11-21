@@ -184,6 +184,10 @@ nav.cats{position:sticky;top:0;z-index:20;margin-top:18px;padding:10px 0;backgro
 .ln{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #2e2016}
 .ln .s{color:var(--muted);font-size:12.5px;margin-top:3px;line-height:1.4}
 .mini{display:flex;align-items:center;border:1px solid #3a281c;border-radius:999px}.mini button{width:34px;height:34px;font-weight:800;font-size:18px}.mini span{min-width:18px;text-align:center;font-weight:800}
+.lg{font-size:12.5px;font-weight:800;color:var(--gold);margin:12px 0 7px;letter-spacing:.3px}.lg:first-child{margin-top:2px}
+.ck .tx{font-weight:600;opacity:.75;font-size:12.5px;margin-left:4px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#locs.err{animation:none;outline:2px solid #ff5a3c;outline-offset:6px;border-radius:12px}
 .card{background:#1b120d;border:1px solid #2e2016;border-radius:14px;padding:13px 15px;font-size:14px;line-height:1.55}
 .card b{color:var(--gold2)}
 .lnk{color:var(--gold2);text-decoration:underline;font-weight:700;font-size:14px;margin-top:8px}
@@ -218,7 +222,7 @@ nav.cats{position:sticky;top:0;z-index:20;margin-top:18px;padding:10px 0;backgro
   <div class="brand"><div class="ilogo"><img class="lg" alt="Comercial D'Mãe"><img class="fl flimg" alt=""></div></div>
   <a class="addr" id="addr" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.3 7 13 7 13s7-7.7 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg><span id="addrT"></span></a><br>
   <div class="ribbon">CARDÁPIO DIÁRIO</div>
-  <div class="meta"><span class="pill day" id="dayP"></span><span class="pill" id="stP"></span><span class="pill">🛵 Delivery · taxa conforme o endereço</span></div>
+  <div class="meta"><span class="pill day" id="dayP"></span><span class="pill" id="stP"></span><span class="pill">🛵 Delivery a partir de R$ 3,00</span></div>
   <div class="notice" style="margin-top:12px">⏰ <b>Faça seu pedido antecipado!</b> Primeira rota de entrega a partir das <b>10:50</b>.</div>
   <div id="aviso"></div>
 </header>
@@ -249,16 +253,18 @@ nav.cats{position:sticky;top:0;z-index:20;margin-top:18px;padding:10px 0;backgro
   <div class="blk"><h4 id="pfT">Seus dados</h4><div id="pfR"></div>
     <div id="pfF"><label class="lbl" for="pNome">Nome</label><input class="inp" id="pNome" autocomplete="name" placeholder="Seu nome">
       <label class="lbl" for="pTel">WhatsApp</label><input class="inp" id="pTel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(92) 9 9999-9999">
-      <div id="endB"><label class="lbl" for="pEnd">Endereço (rua e número)</label><input class="inp" id="pEnd" autocomplete="street-address" placeholder="Ex.: Rua das Flores, 120">
-        <label class="lbl" for="pBai">Bairro</label><input class="inp" id="pBai" placeholder="Seu bairro">
+      <div id="endB"><label class="lbl">Onde vamos entregar? <span style="font-weight:500">(a taxa já entra no total)</span></label><div id="locs"></div>
+        <div id="bxCond"><div class="r2"><div><label class="lbl" for="pBloco">Bloco</label><input class="inp" id="pBloco" placeholder="Bloco"></div><div><label class="lbl" for="pApto">Apartamento</label><input class="inp" id="pApto" inputmode="numeric" placeholder="Apto"></div></div>
+          <div class="notice">🛎️ Avise a portaria do seu condomínio que tem uma entrega do <b>Comercial D'Mãe</b>, assim o entregador é liberado sem demora.</div></div>
+        <div id="bxRua"><label class="lbl" for="pEnd">Endereço (rua e número)</label><input class="inp" id="pEnd" autocomplete="street-address" placeholder="Ex.: Rua das Flores, 120"></div>
         <label class="lbl" for="pRef">Ponto de referência</label><input class="inp" id="pRef" placeholder="Ex.: perto da escola"></div>
       <label class="chk"><input type="checkbox" id="pSv" checked> Salvar meus dados neste celular</label></div>
-    <button class="geo" id="geoB" type="button">📍 Enviar minha localização</button><div id="geoI">Ajuda a calcular a taxa e o entregador a chegar rápido.</div><div class="notice" id="rotaN">⏰ Faça seu pedido antecipado! Primeira rota de entrega a partir das 10:50.</div></div>
+    <button class="geo" id="geoB" type="button">📍 Enviar minha localização</button><div id="geoI">Ajuda o entregador a chegar mais rápido.</div><div class="notice" id="rotaN">⏰ Faça seu pedido antecipado! Primeira rota de entrega a partir das 10:50.</div></div>
   <div class="blk"><h4>Pagamento</h4><div class="chips" id="pag"><button class="ck" data-v="Pix">Pix</button><button class="ck" data-v="Débito">Cartão de débito</button><button class="ck" data-v="Crédito">Cartão de crédito</button><button class="ck" data-v="Dinheiro">Dinheiro</button></div>
     <div class="notice" style="margin-top:10px">💳 <b>Pagamento no cartão:</b> é cobrada uma pequena taxa da maquininha — <b>débito +<span class="tdb">2</span>%</b> e <b>crédito +<span class="tcr">5</span>%</b>.</div>
     <div id="trB" hidden><label class="lbl" for="troco">Troco para quanto?</label><input class="inp" id="troco" inputmode="decimal" placeholder="Ex.: 100,00"></div></div>
   <div class="blk"><h4>Observações</h4><textarea class="inp" id="obs" rows="2" placeholder="Ex.: sem cebola, carne bem passada"></textarea></div>
-  <div class="sum"><div><span>Subtotal</span><span id="sS"></span></div><div id="sT"><span>Entrega</span><span>conforme o endereço</span></div><div id="sF" style="display:none"><span id="sFl"></span><span id="sFv"></span></div><div class="tot"><span>Total</span><span id="sTo"></span></div></div>
+  <div class="sum"><div><span>Subtotal</span><span id="sS"></span></div><div id="sT"><span id="sTl">Entrega</span><span id="sTv">escolha o local</span></div><div id="sF" style="display:none"><span id="sFl"></span><span id="sFv"></span></div><div class="tot"><span>Total</span><span id="sTo"></span></div></div>
   <button class="send" id="send">Enviar pedido pelo WhatsApp</button>
   <p style="text-align:center;margin-top:10px;color:var(--muted);font-size:12.5px">O pedido abre no WhatsApp do Comercial D'Mãe, é só tocar em enviar.</p>
 </div></div>
@@ -476,26 +482,41 @@ function upd(){ const n=CART.reduce((s,l)=>s+l.q,0); $("#cN").textContent=n; $("
   $("#lines").innerHTML=CART.map((l,i)=>`<div class="ln"><div><div style="font-weight:800">${esc(l.n)}</div><div class="s">${l.det.map(esc).join("<br>")}${l.det.length?"<br>":""}${brl(l.pr*l.q)}</div></div>
     <div class="mini"><button data-dec="${i}">−</button><span>${l.q}</span><button data-inc="${i}">+</button></div></div>`).join("");
   $("#sS").textContent=brl(sub()); $("#sF").style.display=pctC()?"":"none"; $("#sFl").textContent=`Taxa do cartão (${PAG.toLowerCase()} ${pctC()}%)`; $("#sFv").textContent=brl(taxaC());
-  $("#sTo").textContent=brl(sub()+taxaC())+(MODO==="entrega"?" + entrega":""); $("#sT").style.display=MODO==="entrega"?"":"none";
+  $("#sTo").textContent=brl(sub()+taxaC()+taxaE()); $("#sT").style.display=MODO==="entrega"?"":"none";
+  $("#sTl").textContent=LOC?"Entrega — "+nomeLoc(LOC):"Entrega"; $("#sTv").textContent=LOC?brl(LOC.t):"escolha o local";
   if(!n&&$("#cart").classList.contains("show")) hide(); }
-const pfOk=()=>PF.nome&&PF.tel&&(MODO!=="entrega"||PF.end);
+/* ---- locais de entrega e taxas ---- */
+const LOCAIS=[
+ {g:"🏢 Condomínios",t:5,c:1,l:["Harmonia","Vida Nova","Liberdade","Felicidade","Violeta","Jasmim","Verona"]},
+ {g:"🏘️ Bairro Lago Azul",t:5,l:["Ismail Aziz","São João","Granja São Pedro 1","Granja São Pedro 2","Granja São Pedro 3","Comunidade Aliança com Deus","Comunidade Agrovila","Comunidade Renascer"]},
+ {g:"📍 Outros bairros",l:[["23 de Setembro",3],["União da Vitória",8],["Viver Melhor",10],["Santa Etelvina",10],["Comunidade Bom Jesus",10]]}];
+const LOC_MAP={}; LOCAIS.forEach(G=>G.l.forEach(x=>{ const [n,t]=Array.isArray(x)?x:[x,G.t]; LOC_MAP[n]={n,t,c:!!G.c,g:G.g}; }));
+const nomeLoc=L=>L?(L.c?"Condomínio "+L.n:L.n):"";
+let LOC=(PF.loc&&LOC_MAP[PF.loc])||null;
+const taxaE=()=>MODO==="entrega"&&LOC?LOC.t:0;
+function drawLoc(){ $("#locs").innerHTML=LOCAIS.map(G=>`<div class="lg">${G.g}</div><div class="chips">`+G.l.map(x=>{ const n=Array.isArray(x)?x[0]:x, L=LOC_MAP[n];
+    return `<button class="ck${LOC&&LOC.n===n?" on":""}" data-loc="${esc(n)}">${esc(n)}<span class="tx">${brl(L.t)}</span></button>`; }).join("")+"</div>").join("");
+  $("#bxCond").style.display=LOC&&LOC.c?"":"none"; $("#bxRua").style.display=LOC&&LOC.c?"none":""; }
+const pfOk=()=>PF.nome&&PF.tel&&(MODO!=="entrega"||(PF.loc&&LOC_MAP[PF.loc]&&(LOC_MAP[PF.loc].c?PF.bloco&&PF.apto:PF.end)));
 function drawC(){ $$(".tdb").forEach(e=>e.textContent=String(TAXA_CARTAO["Débito"]).replace(".",",")); $$(".tcr").forEach(e=>e.textContent=String(TAXA_CARTAO["Crédito"]).replace(".",",")); $$("#modo .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===MODO)); $$("#pag .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===PAG));
   $("#trB").hidden=PAG!=="Dinheiro"; const r=pfOk()&&!EDIT; $("#pfF").style.display=r?"none":""; $("#endB").style.display=MODO==="entrega"?"":"none";
   $("#geoB").style.display=$("#geoI").style.display=$("#rotaN").style.display=MODO==="entrega"?"":"none"; $("#pfT").textContent=MODO==="entrega"?"Dados para entrega":"Seus dados";
-  $("#pfR").innerHTML=r?`<div class="card">Olá, <b>${esc(PF.nome)}</b>! 👋<br>📱 ${esc(PF.tel)}${MODO==="entrega"?`<br>📍 ${esc(PF.end)}${PF.bai?` — ${esc(PF.bai)}`:""}`:""}</div><button class="lnk" id="edit">Alterar meus dados</button>`:"";
-  if(!r) [["Nome","nome"],["Tel","tel"],["End","end"],["Bai","bai"],["Ref","ref"]].forEach(([a,b])=>{ const el=$("#p"+a); if(!el.value) el.value=PF[b]||""; }); upd(); }
+  $("#pfR").innerHTML=r?`<div class="card">Olá, <b>${esc(PF.nome)}</b>! 👋<br>📱 ${esc(PF.tel)}${MODO==="entrega"&&LOC?`<br>📍 ${esc(nomeLoc(LOC))}${LOC.c?` · Bloco ${esc(PF.bloco)} · Apto ${esc(PF.apto)}`:` — ${esc(PF.end)}`}${PF.ref?`<br>Ref.: ${esc(PF.ref)}`:""}<br>🛵 Taxa de entrega: <b>${brl(LOC.t)}</b>`:""}</div><button class="lnk" id="edit">Alterar meus dados</button>`:"";
+  if(!r) [["Nome","nome"],["Tel","tel"],["End","end"],["Ref","ref"],["Bloco","bloco"],["Apto","apto"]].forEach(([a,b])=>{ const el=$("#p"+a); if(!el.value) el.value=PF[b]||""; }); drawLoc(); upd(); }
 $("#geoB").onclick=()=>{ if(!navigator.geolocation){ $("#geoI").textContent="Seu celular não permitiu. Seguimos pelo endereço."; return; } $("#geoB").textContent="⏳ Pegando sua localização…";
   navigator.geolocation.getCurrentPosition(p=>{ GEO={lat:+p.coords.latitude.toFixed(6),lng:+p.coords.longitude.toFixed(6)}; $("#geoB").textContent="📍 Atualizar localização"; $("#geoI").textContent="✅ Localização recebida"; $("#geoI").className="ok"; },
   ()=>{ $("#geoB").textContent="📍 Enviar minha localização"; $("#geoI").textContent="Tudo bem! Seguimos pelo endereço digitado."; },{enableHighAccuracy:true,timeout:15000}); };
 const er=el=>{ el.classList.remove("err"); void el.offsetWidth; el.classList.add("err"); el.focus?.(); };
 $("#send").onclick=()=>{ if(!CART.length||!ABERTO) return; const r=$("#pfF").style.display==="none";
-  const p=r?{...PF}:{nome:$("#pNome").value.trim(),tel:$("#pTel").value.trim(),end:$("#pEnd").value.trim(),bai:$("#pBai").value.trim(),ref:$("#pRef").value.trim()};
-  if(!r){ if(!p.nome) return er($("#pNome")); if(p.tel.replace(/\D/g,"").length<10) return er($("#pTel")); if(MODO==="entrega"&&!p.end) return er($("#pEnd")); }
+  const p=r?{...PF}:{nome:$("#pNome").value.trim(),tel:$("#pTel").value.trim(),end:$("#pEnd").value.trim(),ref:$("#pRef").value.trim(),bloco:$("#pBloco").value.trim(),apto:$("#pApto").value.trim(),loc:LOC?LOC.n:""};
+  if(!r){ if(!p.nome) return er($("#pNome")); if(p.tel.replace(/\D/g,"").length<10) return er($("#pTel"));
+    if(MODO==="entrega"){ if(!LOC){ $("#locs").scrollIntoView({behavior:"smooth",block:"center"}); return er($("#locs")); }
+      if(LOC.c){ if(!p.bloco) return er($("#pBloco")); if(!p.apto) return er($("#pApto")); } else if(!p.end) return er($("#pEnd")); } }
   if(!PAG){ $$("#pag .ck").forEach(er); return; }
   if(!r&&$("#pSv").checked){ PF={...PF,...p}; lsS("dmae2_perfil",PF); }
   let m=`🔥 *PEDIDO — COMERCIAL D'MÃE*\n${MODO==="entrega"?"🛵 Entrega":"🏠 Retirada no local"}\n\n`+CART.map(l=>`• ${l.q}x *${l.n}*${l.det.length?"\n   "+l.det.join("\n   "):""}\n   ${brl(l.pr*l.q)}`).join("\n");
-  m+=`\n\nSubtotal: ${brl(sub())}${pctC()?`\nTaxa do cartão (${PAG.toLowerCase()} ${pctC()}%): ${brl(taxaC())}`:""}\n*Total: ${brl(sub()+taxaC())}*${MODO==="entrega"?" + entrega\nTaxa de entrega: conforme o endereço":""}\n\n👤 ${p.nome}\n📱 ${p.tel}`;
-  if(MODO==="entrega"){ m+=`\n📍 ${p.end}${p.bai?` — ${p.bai}`:""}${p.ref?`\n   Ref.: ${p.ref}`:""}`; if(GEO) m+=`\n🗺️ Localização: https://maps.google.com/?q=${GEO.lat},${GEO.lng}`; }
+  m+=`\n\nSubtotal: ${brl(sub())}${pctC()?`\nTaxa do cartão (${PAG.toLowerCase()} ${pctC()}%): ${brl(taxaC())}`:""}${MODO==="entrega"?`\nTaxa de entrega (${nomeLoc(LOC)}): ${brl(LOC.t)}`:""}\n*Total: ${brl(sub()+taxaC()+taxaE())}*\n\n👤 ${p.nome}\n📱 ${p.tel}`;
+  if(MODO==="entrega"){ m+=LOC.c?`\n🏢 *${nomeLoc(LOC)}*\n   Bloco ${p.bloco} · Apto ${p.apto}`:`\n📍 ${p.end} — *${LOC.n}*`; if(p.ref) m+=`\n   Ref.: ${p.ref}`; if(GEO) m+=`\n🗺️ Localização: https://maps.google.com/?q=${GEO.lat},${GEO.lng}`; }
   m+=`\n💳 Pagamento: ${PAG==="Débito"||PAG==="Crédito"?"Cartão de "+PAG.toLowerCase():PAG}`; const t=$("#troco").value.trim(); if(PAG==="Dinheiro"&&t) m+=` (troco para R$ ${t})`; const o=$("#obs").value.trim(); if(o) m+=`\n📝 Obs.: ${o}`;
   location.href=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(m)}`; };
 
@@ -508,6 +529,7 @@ document.addEventListener("click",e=>{ const o=e.target.closest("[data-open]"),s
   if(e.target.id==="edit"){ EDIT=true; drawC(); } });
 document.addEventListener("input",e=>e.target.classList?.remove("err"));
 $("#ov").onclick=hide; $("#openC").onclick=()=>{ drawC(); show("#cart"); };
+$("#locs").onclick=e=>{ const b=e.target.closest("[data-loc]"); if(b){ LOC=LOC_MAP[b.dataset.loc]; $("#locs").classList.remove("err"); drawLoc(); upd(); } };
 $("#modo").onclick=e=>{ const b=e.target.closest(".ck"); if(b){ MODO=b.dataset.v; drawC(); } };
 $("#pag").onclick=e=>{ const b=e.target.closest(".ck"); if(b){ PAG=b.dataset.v; drawC(); } };
 </script>
