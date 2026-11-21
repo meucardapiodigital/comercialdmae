@@ -317,10 +317,10 @@ let PRATOS=[
    fixo:"Arroz, Pirão, Vinagrete, Farofa, Pimenta"},
  {s:"esp",n:"Lasanha Simples",p:17,img:"lasimples",d:"Lasanha na marmitinha, bem gratinada."},
 
- {s:"fds",n:"Banda de Tambaqui Assada",img:"banda",tag:"Fim de semana",d:"Banda de tambaqui assada na brasa.",tam:[["Completa (com acompanhamentos)",65],["Simples",60]],
+ {s:"fds",n:"Banda de Tambaqui Assada",img:"banda",tag:"Fim de semana",d:"Banda de tambaqui assada na brasa.",tam:[["Completa (com acompanhamentos)",65],["Simples",60,"Limão, Pimenta, Farofa, Banana frita"]],
    fixo:"Baião, Farofa, Maionese, Vinagrete, Banana frita, Limão, Pimenta",fixoSo:0},
- {s:"fds",n:"Frango Assado",img:"assado",tag:"Fim de semana",d:"O melhor frango assado da região!",tam:[["Frango completo (com acompanhamentos)",65],["Frango simples",60],["Banda de frango",35]],
-   fixo:"Baião, Macarrão, Maionese, Vinagrete, Farofa, Limão, Pimenta",fixoSo:0}
+ {s:"fds",tipo:"dia",n:"Frango Assado",img:"assado",tag:"Fim de semana",d:"O melhor frango assado da região!",tam:[["Frango completo",65],["Frango simples",60],["Banda de frango",35]]}
+
 ];
 let BEBIDAS=[["Refrigerantes 1 L",[["Coca-Cola 1 L",10],["Fanta 1 L",10],["Baré 1 L",8],["Pepsi 1 L",8]]],
   ["Refrigerantes 1,5 L / 2 L",[["Coca-Cola 1,5 L",12],["Fanta 1,5 L",12],["Baré 2 L",12]]],
@@ -399,9 +399,9 @@ async function lerPlanilha(){ if(!SHEET_ID) return;
     if(po&&po.length){ PORCOES=po.filter(r=>r.porcao&&sim(r.disponivel)).map(r=>[r.porcao,/banana/i.test(r.porcao)?"🍌":/batata/i.test(r.porcao)?"🍟":"🍽️"]);
       const vs=String((po.find(r=>r.valores)||{}).valores||"").split(/[;\/]/).map(num).filter(v=>!isNaN(v)&&v>0); if(vs.length) VALORES_PORCAO=vs; }
     if(pr&&pr.length) PRATOS=pr.filter(r=>r.prato).map(r=>{ const sec=nk(r.secao); const s=sec.startsWith("fim")||sec==="fds"?"fds":sec.startsWith("esp")?"esp":"dia";
-      const tam=String(r.tamanhos||"").split(";").map(x=>{ const i=x.lastIndexOf("="); return i<0?null:[x.slice(0,i).trim(),num(x.slice(i+1))]; }).filter(t=>t&&!isNaN(t[1]));
+      const tam=String(r.tamanhos||"").split(";").map(x=>{ const [y,ac]=x.split("|"), i=y.lastIndexOf("="); if(i<0) return null; const t=[y.slice(0,i).trim(),num(y.slice(i+1))]; if(ac&&ac.trim()) t.push(ac.trim()); return t; }).filter(t=>t&&!isNaN(t[1]));
       const o={s,n:r.prato,img:r.foto,d:r.descricao,tag:r.selo,off:!sim(r.disponivel)};
-      if(tam.length){ o.tam=tam; o.fixo=r.acompanha; if(sim(r.acompanha_so_na_1a_opcao)&&nk(r.acompanha_so_na_1a_opcao)) o.fixoSo=0; const q=parseInt(r.qtd_opcionais); if(q) o.opc=q; }
+      if(tam.length){ o.tam=tam; o.fixo=r.acompanha; if(sim(r.acompanha_so_na_1a_opcao)&&nk(r.acompanha_so_na_1a_opcao)) o.fixoSo=0; const q=parseInt(r.qtd_opcionais); if(q) o.opc=q; if(/^s/i.test(nk(r.escolhe_opcao_1_ou_2))) o.tipo="dia"; }
       else { o.p=num(r.preco); if(s==="dia"){ if(r.acompanha) o.extra=r.acompanha; } else { if(r.acompanha) o.fixo=r.acompanha; const q=parseInt(r.qtd_opcionais); if(q) o.opc=q; } }
       return o; }).filter(o=>o.tam||!isNaN(o.p));
     if(ac&&ac.length) ACOMP=ac.filter(r=>r.opcao&&sim(r.disponivel)).map((r,i)=>({id:"op"+(i+1),nome:r.opcao,itens:r.itens,fds:!/^n/i.test(nk(r.so_fim_de_semana)||"nao")}));
@@ -449,7 +449,7 @@ function drawP(){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0), falta=nOpc&&!
   ${p.tipo==="dia"?`<div class="blk"><h4>Acompanhamento <span class="req">Escolha 1</span></h4><div class="ops">${ACOMP.map(a=>{ const off=a.fds&&!FDS;
      return `<button class="op${SEL.a===a.id?" on":""}" data-a="${a.id}" ${off?"disabled":""}><span class="l"><span class="rd"></span><span><b>${a.nome}</b><small>${a.itens}${off?" · só sáb, dom e feriados":""}</small></span></span></button>`; }).join("")}</div>
      ${p.extra?`<div class="fix" style="margin-top:10px">${lista(p.extra).map(x=>`<div>${esc(x)}</div>`).join("")}</div>`:""}</div>`:""}
-  ${p.fixo&&(p.fixoSo===undefined||SEL.t===0)?`<div class="blk"><h4>Acompanha</h4><div class="fix">${lista(p.fixo).map(x=>`<div>${esc(x)}</div>`).join("")}</div></div>`:""}
+  ${(fx=>fx?`<div class="blk"><h4>Acompanha</h4><div class="fix">${lista(fx).map(x=>`<div>${esc(x)}</div>`).join("")}</div></div>`:"")((p.tams[SEL.t]&&p.tams[SEL.t][2])||(p.fixo&&(p.fixoSo===undefined||SEL.t===0)?p.fixo:""))}
   ${nOpc?`<div class="blk"><h4>Opcionais — escolha 1 ou ${nOpc} <span class="${falta?"req":"ok"}">${SEL.o.length}/${nOpc}${falta?"":" ✓"}</span></h4><div class="chips">${OPCIONAIS.map(o=>{ const on=SEL.o.includes(o);
      return `<button class="ck${on?" on":""}" data-o="${esc(o)}" ${!on&&SEL.o.length>=nOpc?"disabled":""}>${esc(o)}</button>`; }).join("")}</div></div>`:""}
   ${nOpc?`<div class="blk"><h4>Adicionais <span>+ ${brl(VALOR_ADICIONAL)} cada</span></h4>
