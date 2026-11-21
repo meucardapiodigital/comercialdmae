@@ -500,7 +500,7 @@ function upd(){ const n=CART.reduce((s,l)=>s+l.q,0); $("#cN").textContent=n; $("
   if(!n&&$("#cart").classList.contains("show")) hide(); }
 /* ---- locais de entrega e taxas ---- */
 const LOCAIS=[
- {g:"Condomínios",t:5,c:1,l:["Harmonia","Vida Nova","Liberdade","Felicidade","Violeta","Jasmim","Verona"]},
+ {g:"Condomínios",t:5,c:1,l:["Harmonia","Vida Nova","Liberdade","Felicidade","Violeta","Jasmim","Verona","Paraíso"]},
  {g:"Bairro Lago Azul",t:5,l:["Ismail Aziz","São João","Granja São Pedro 1","Granja São Pedro 2","Granja São Pedro 3","Comunidade Aliança com Deus","Comunidade Agrovila","Comunidade Renascer"]},
  {g:"Outros bairros",l:[["23 de Setembro",3],["União da Vitória",8],["Viver Melhor",10],["Santa Etelvina",10],["Comunidade Bom Jesus",10]]}];
 const LOC_MAP={}; LOCAIS.forEach(G=>G.l.forEach(x=>{ const [n,t]=Array.isArray(x)?x:[x,G.t]; LOC_MAP[n]={n,t,c:!!G.c,g:G.g}; }));
