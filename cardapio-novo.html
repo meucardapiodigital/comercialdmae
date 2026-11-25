@@ -309,7 +309,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
   <div class="blk"><h4>Observações</h4><textarea class="inp" id="obs" rows="2" placeholder="Ex.: sem cebola, carne bem passada"></textarea></div>
   <div class="sum"><div><span>Subtotal</span><span id="sS"></span></div><div id="sT"><span id="sTl">Entrega</span><span id="sTv">escolha o local</span></div><div id="sF" style="display:none"><span id="sFl"></span><span id="sFv"></span></div><div class="tot"><span>Total</span><span id="sTo"></span></div></div>
   <button class="send" id="send">Enviar pedido</button><div id="sErr"></div><button class="zapF" id="zapF" type="button">💬 Enviar pelo WhatsApp</button>
-  <p style="text-align:center;margin-top:10px;color:var(--muted);font-size:12.5px">O pedido vai direto para a cozinha do Comercial D'Mãe e você acompanha o preparo por aqui.</p>
+  <p style="text-align:center;margin-top:10px;color:var(--muted);font-size:12.5px">Ao enviar, o pedido entra no sistema da cozinha e abre no WhatsApp do Comercial D'Mãe já organizado: é só tocar em enviar. Depois, acompanhe o preparo por aqui.</p>
 </div></div>
 <div class="cbar" id="cbar"><button id="openC"><span><span class="n" id="cN">0</span>Ver meu pedido</span><span id="cT"></span></button></div>
 <div class="toast" id="toast">✓ Adicionado ao pedido</div>
@@ -673,12 +673,25 @@ async function enviaOnline(p,m){ if(ENVIANDO) return; const b=$("#send"), agora=
     cliente:{nome:p.nome, tel:p.tel}, modo:MODO==="entrega"?"entrega":"balcao", mesa:"", end,
     itens:CART.map(l=>({n:l.n, det:l.det, q:l.q, p:l.pr})), subtotal:sub(), taxa:taxaE(), taxaCartao:taxaC(), total:Math.round((sub()+taxaC()+taxaE())*100)/100,
     pag:pagTxt, troco:PAG==="Dinheiro"?tr:"", obs:ob };
+  const zap=n=>`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msgZap(p,n,tr,ob))}`, uOk=zap(ped.num), uSo=zap("");
   ENVIANDO=true; b.disabled=true; b.innerHTML='<span class="sp"></span>Enviando…'; $("#sErr").style.display="none";
   try{ const id=await Promise.race([DB.criar(ped),new Promise((_,r)=>setTimeout(()=>r(new Error("tempo")),15000))]);
-    lsS("dmae_pedido",{id,num:ped.num}); CART=[]; $("#obs").value=""; $("#troco").value=""; ENVIANDO=false; b.disabled=false; b.textContent="Enviar pedido"; upd(); hide(); acompanhar(id,true); }
-  catch(e){ ENVIANDO=false; b.disabled=false; b.textContent="Tentar de novo"; window.__ZAPMSG=m;
-    $("#sErr").textContent="Não foi possível enviar agora (internet fraca?). Tente de novo ou mande pelo WhatsApp."; $("#sErr").style.display="block"; $("#zapF").style.display="block"; } }
-$("#zapF").onclick=()=>{ if(window.__ZAPMSG) location.href=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(window.__ZAPMSG)}`; };
+    lsS("dmae_pedido",{id,num:ped.num,abrir:true}); CART=[]; $("#obs").value=""; $("#troco").value=""; ENVIANDO=false; b.disabled=false; b.textContent="Enviar pedido"; upd(); hide(); acompanhar(id,true);
+    aviso("✅ Pedido registrado! Abrindo o WhatsApp…"); setTimeout(()=>{ location.href=uOk; },1200); }
+  catch(e){ ENVIANDO=false; b.disabled=false; b.textContent="Enviar pedido"; location.href=uSo; } }
+function msgZap(p,n,tr,ob){ const L=[], br=x=>brl(x).replace(/\u00a0/g," "), linha="━━━━━━━━━━━━━━━";
+  L.push(`🔥 *COMERCIAL D'MÃE — ${n?"PEDIDO #"+n:"NOVO PEDIDO"}*`,linha,MODO==="entrega"?"🛵 *ENTREGA*":"🏠 *RETIRADA NO LOCAL*","");
+  L.push(`👤 *Cliente:* ${p.nome}`,`📱 *WhatsApp:* ${p.tel}`,"","🍽️ *ITENS DO PEDIDO*");
+  CART.forEach(l=>{ L.push(`*${l.q}x ${l.n}* — ${br(l.pr*l.q)}`); l.det.forEach(d=>L.push(`   ▸ ${d}`)); });
+  L.push("","💰 *VALORES*",`Subtotal: ${br(sub())}`); if(MODO==="entrega") L.push(`Entrega (${nomeLoc(LOC)}): ${br(LOC.t)}`);
+  if(pctC()) L.push(`Taxa do cartão (${PAG.toLowerCase()} ${pctC()}%): ${br(taxaC())}`); L.push(`*TOTAL: ${br(sub()+taxaC()+taxaE())}*`);
+  if(MODO==="entrega"){ L.push("","📍 *ENDEREÇO DE ENTREGA*"); if(LOC.c) L.push(`🏢 ${nomeLoc(LOC)}`,`Bloco ${p.bloco} · Apto ${p.apto}`,"🛎️ Portaria liberada para o entregador"); else L.push(`🏠 ${p.end}`,`Bairro: ${LOC.n}`);
+    if(p.ref) L.push(`🔎 Referência: ${p.ref}`); if(GEO) L.push(`🗺️ Localização: https://maps.google.com/?q=${GEO.lat},${GEO.lng}`); }
+  L.push("",`💳 *PAGAMENTO:* ${PAG==="Débito"||PAG==="Crédito"?"Cartão de "+PAG.toLowerCase():PAG}${PAG==="Dinheiro"?(tr?` — troco para R$ ${tr}`:" — sem troco"):""}`);
+  if(PAG==="Pix"&&typeof PIX!=="undefined") L.push(`💠 Chave Pix: ${PIX.chave} (${PIX.nome} · ${PIX.banco})`,"📎 Vou enviar o comprovante do Pix aqui.");
+  if(ob) L.push("",`📝 *Observação:* ${ob}`);
+  L.push(linha,n?"✅ Pedido registrado no sistema. Acompanho o preparo pelo cardápio.":"⚠️ Pedido enviado só pelo WhatsApp (o sistema estava sem conexão).");
+  return L.join("\n"); }
 /* ---- acompanhamento ---- */
 let TRK=null, TRKoff=null, ultSt=null;
 const hmT=t=>t?new Date(t).toLocaleTimeString("pt-BR",{timeZone:"America/Manaus",hour:"2-digit",minute:"2-digit"}):"";
@@ -702,7 +715,7 @@ function desenhaTrk(){ const x=TRK, bt=$("#trkBtn"); if(!x){ bt.classList.remove
    ${fim?`<button class="trkz nv" id="trkFim">Fazer um novo pedido</button>`:""}`; }
 $("#trkBtn").onclick=()=>show("#trk");
 document.addEventListener("click",e=>{ if(e.target.id==="trkFim"){ lsS("dmae_pedido",null); TRKoff&&TRKoff(); TRK=null; desenhaTrk(); hide(); } });
-(()=>{ const a=lsG("dmae_pedido"); if(a&&a.id) acompanhar(a.id,false); })();
+(()=>{ const a=lsG("dmae_pedido"); if(a&&a.id){ acompanhar(a.id,!!a.abrir); if(a.abrir) lsS("dmae_pedido",{id:a.id,num:a.num}); } })();
 /* ---- aberto/fechado e itens esgotados (controlados pelo painel) ---- */
 DB.ouvirLoja(o=>{ const f=o.aberto===false; if(f!==FECHADO_P){ const era=FECHADO_P; FECHADO_P=f; setStatus(...ST_PLAN); if(CUR&&$("#det").classList.contains("show")) (CUR.k==="p"?drawP():drawS()); if(era&&!f) aviso("🟢 Abrimos! Já pode enviar o seu pedido"); } });
 DB.ouvirOff(o=>{ OFF=o||{}; const antes=CART.length; CART=CART.filter(l=>!OFF["Pratos|"+l.n]&&!OFF["Bebidas|"+l.n]&&!OFF["Sobremesas|"+l.n]); renderAll(); upd(); if(CART.length!==antes) aviso("Um item do seu pedido acabou hoje"); });

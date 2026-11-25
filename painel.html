@@ -284,7 +284,7 @@ function mountLogo(el,o){ o=o||{}; el.classList.add("lg3d"); el.classList.add(o.
   <div class="lgi"></div>
   <h1 class="L">Painel de pedidos</h1><p>Comercial D’Mãe</p>
   <div class="lerr" id="lerr"></div>
-  <input id="lEmail" type="email" placeholder="E-mail" autocomplete="username" value="">
+  <input id="lEmail" type="email" placeholder="E-mail" autocomplete="username" value="comercialdmae@gmail.com">
   <input id="lSenha" type="password" placeholder="Senha" autocomplete="current-password">
   <button class="big" id="bEntrar">Entrar e ativar alertas 🔔</button>
   <div class="demo" id="demoInfo">🧪 <b>Modo demonstração</b><br>Use qualquer e-mail e a senha <b>1234</b>.<br>Abra o cardápio em outra aba deste mesmo navegador e faça um pedido: ele aparece aqui na hora.</div>
@@ -492,8 +492,8 @@ function iniciar(){ $("#login").style.display="none"; $("#app").style.display="b
     desenha(); alarmeChk(); }, ()=>semPermissao()); }
 const ERRO=e=>e&&e.code==="permission-denied"?"Esta conta não tem permissão no painel do "+NOME_LOJA+". Saia e entre com o e-mail da loja.":"Não foi possível concluir. Verifique a internet e tente de novo.";
 async function semPermissao(){ const em=(firebase.auth&&firebase.auth().currentUser&&firebase.auth().currentUser.email)||"esta conta"; try{ await DB.sair(); }catch(e){}
-  $("#app").style.display="none"; $("#itens").style.display="none"; $("#toque").classList.remove("on"); $("#login").style.display=""; $("#lEmail").value=""; $("#lSenha").value="";
-  $("#lerr").textContent=`A conta ${em} não tem acesso ao painel do ${NOME_LOJA}. Entre com o e-mail cadastrado da loja.`; }
+  $("#app").style.display="none"; $("#itens").style.display="none"; $("#toque").classList.remove("on"); $("#login").style.display=""; $("#lEmail").value="comercialdmae@gmail.com"; $("#lSenha").value="";
+  $("#lerr").textContent=`A conta ${em} não tem acesso ao painel do ${NOME_LOJA}. Entre com comercialdmae@gmail.com.`; }
 setTimeout(()=>DB.logado(ok=>{ if(ok) iniciar(); }),0); /* depois de todo o script carregar */
 $("#bSair").onclick=async()=>{ await DB.sair(); location.reload(); };
 $("#bSom").onclick=()=>{ SOM=!SOM; ac(); $("#bSom").textContent=SOM?"🔔 Som ligado":"🔕 Som desligado"; if(SOM) toque(); };
