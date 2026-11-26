@@ -466,6 +466,8 @@ const lista=s=>String(s||"").split(",").map(x=>x.trim()).filter(Boolean);
 function hojeManaus(){ try{ const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Manaus",year:"numeric",month:"2-digit",day:"2-digit",weekday:"short"}).formatToParts(new Date());
   const g=t=>p.find(x=>x.type===t).value; return {iso:`${g("year")}-${g("month")}-${g("day")}`,wd:g("weekday")}; }catch(e){ const d=new Date(); return {iso:d.toISOString().slice(0,10),wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()]}; } }
 const H=hojeManaus(); let fer=false, FDS=false;
+const LIB=k=>OFF["Libera|"+k]===H.iso;   // painel liberou hoje um item de fim de semana
+const acOff=a=>!!OFF["Acompanhamentos|"+a.nome]||(a.fds&&!FDS&&!LIB("Acompanhamentos|"+a.nome));
 function calcFDS(){ fer=CONFIG.feriados.includes(H.iso); const f=String(CONFIG.feriado_hoje||"AUTO").toUpperCase(); FDS=f==="SIM"?true:(f==="NÃO"||f==="NAO")?false:(H.wd==="Sat"||H.wd==="Sun"||fer); }
 const fmtTel=n=>{const d=n.slice(2);return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`};
 
@@ -479,7 +481,7 @@ $("#zap").href="https://wa.me/"+CONFIG.whatsapp; $("#zapT").textContent=fmtTel(C
 $("#dayP").textContent=fer?"🎉 Feriado: especiais liberados":"🔥 Fim de semana: especiais liberados"; $("#dayP").style.display=FDS?"":"none";
 $("#dayP").classList.toggle("we",FDS);
 $("#fdsTxt").textContent=FDS?"Disponíveis hoje! Aproveite.":"Disponíveis somente aos sábados, domingos e feriados.";
-PRATOS.forEach((p,i)=>{ if(p.offPlan===undefined) p.offPlan=!!p.off; p.off=p.offPlan||!!OFF["Pratos|"+p.n]; p.id="p"+i; p.tipo=p.tipo||(p.s==="dia"?"dia":"esp"); p.fdsLock=p.s==="fds"&&!FDS; p.lock=p.fdsLock||!!p.off; p.tams=p.tam||[["Prato",p.p]]; p.min=Math.min(...p.tams.map(t=>t[1])); });
+PRATOS.forEach((p,i)=>{ if(p.offPlan===undefined) p.offPlan=!!p.off; p.off=p.offPlan||!!OFF["Pratos|"+p.n]; p.id="p"+i; p.tipo=p.tipo||(p.s==="dia"?"dia":"esp"); p.fdsLock=p.s==="fds"&&!FDS&&!LIB("Pratos|"+p.n); p.lock=p.fdsLock||!!p.off; p.tams=p.tam||[["Prato",p.p]]; p.min=Math.min(...p.tams.map(t=>t[1])); });
 dishHTML=(p,i)=>`<button class="dish reveal${p.lock?" lock":""}" style="--d:${(i%3)*.06}s" data-open="${p.id}">
   <div class="ph"><img src="${fotoDe(p.img)}" alt="${esc(p.n)}" loading="lazy" decoding="async"></div>
   <div class="tx"><h3>${esc(p.n)}</h3><div class="ds">${esc(p.d||(p.tipo==="dia"?"Com acompanhamentos e até 2 opcionais":""))}</div>
@@ -569,7 +571,7 @@ if(REDUZ||sessionStorage.getItem("dmae_intro")) { intro.remove(); gone=true; } e
 /* ======================= detalhe ======================= */
 let CUR=null,SEL={},Q=1;
 const porTot=()=>Object.values(SEL.por||{}).reduce((a,v)=>a+(v||0),0);
-function openP(id){ const p=PRATOS.find(x=>x.id===id); if(!p) return; CUR={k:"p",p}; SEL={t:0,a:FDS?null:"op1",o:[],x:[],pt:"",por:{}}; if(FDS) SEL.a="op1"; Q=1;
+function openP(id){ const p=PRATOS.find(x=>x.id===id); if(!p) return; CUR={k:"p",p}; SEL={t:0,a:(ACOMP.find(a=>!acOff(a))||{}).id||null,o:[],x:[],pt:"",por:{}}; Q=1;
   $("#dImg").src=fotoDe(p.img); drawP(); show("#det"); $("#sbar").classList.add("show"); }
 function openS(id){ const s=SIMPLES[id]; CUR={k:"s",s,id}; SEL={f:s.fl?s.fl[0]:""}; Q=1; $("#dImg").src=""; drawS(); show("#det"); $("#sbar").classList.add("show"); }
 /* itens esgotados no painel somem da escolha */
@@ -579,8 +581,8 @@ function drawP(){ const {O:OPCIONAIS,A:ADICIONAIS,P:PORCOES,U:PORCAO_UNICA}=_vis
   $("#dC").innerHTML=`<h2>${esc(p.n)}</h2><p class="dsc">${esc(p.d||"")}</p>
   ${p.off?`<div class="notice">Este prato acabou por hoje.</div>`:p.fdsLock?`<div class="notice">Este prato sai somente aos sábados, domingos e feriados.</div>`:""}
   ${p.tams.length>1?`<div class="blk"><h4>Escolha a opção <span class="req">Obrigatório</span></h4><div class="ops">${p.tams.map((t,i)=>`<button class="op${SEL.t===i?" on":""}" data-t="${i}"><span class="l"><span class="rd"></span><b>${esc(t[0])}</b></span><span class="p">${brl(t[1])}</span></button>`).join("")}</div></div>`:""}
-  ${p.tipo==="dia"?`<div class="blk"><h4>Acompanhamento <span class="req">Escolha 1</span></h4><div class="ops">${ACOMP.map(a=>{ const off=a.fds&&!FDS;
-     return `<button class="op${SEL.a===a.id?" on":""}" data-a="${a.id}" ${off?"disabled":""}><span class="l"><span class="rd"></span><span><b>${a.nome}</b><small>${a.itens}${off?" · só sáb, dom e feriados":""}</small></span></span></button>`; }).join("")}</div>
+  ${p.tipo==="dia"?`<div class="blk"><h4>Acompanhamento <span class="req">Escolha 1</span></h4><div class="ops">${ACOMP.map(a=>{ const off=acOff(a), esg=!!OFF["Acompanhamentos|"+a.nome];
+     return `<button class="op${SEL.a===a.id?" on":""}" data-a="${a.id}" ${off?"disabled":""}><span class="l"><span class="rd"></span><span><b>${a.nome}</b><small>${a.itens}${off?(esg?" · indisponível hoje":" · só sáb, dom e feriados"):""}</small></span></span></button>`; }).join("")}</div>
      ${p.extra?`<div class="fix" style="margin-top:10px">${lista(p.extra).map(x=>`<div>${esc(x)}</div>`).join("")}</div>`:""}</div>`:""}
   ${(fx=>fx?`<div class="blk"><h4>Acompanha</h4><div class="fix">${lista(fx).map(x=>`<div>${esc(x)}</div>`).join("")}</div></div>`:"")((p.tams[SEL.t]&&p.tams[SEL.t][2])||(p.fixo&&(p.fixoSo===undefined||SEL.t===0)?p.fixo:""))}
   ${nOpc?`<div class="blk"><h4>Opcionais — escolha 1 ou ${nOpc} <span class="${falta?"req":"ok"}">${SEL.o.length}/${nOpc}${falta?"":" ✓"}</span></h4><div class="chips">${OPCIONAIS.map(o=>{ const on=SEL.o.includes(o);
@@ -594,7 +596,8 @@ function drawP(){ const {O:OPCIONAIS,A:ADICIONAIS,P:PORCOES,U:PORCAO_UNICA}=_vis
      ${PORCAO_UNICA.map(([n,ic,v])=>`<button class="ck${SEL.por[n]?" on":""}" data-pu="${esc(n)}" data-v="${v}" style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:10px;padding:11px 14px"><span style="white-space:nowrap">${ic} ${esc(n)}</span><small style="opacity:.85;white-space:nowrap">${brl(v)}</small></button>`).join("")}`:""}</div>`:""}
   <div class="blk"><h4>Observação do prato</h4><input class="inp" id="dObs" placeholder="Ex.: sem cebola" value="${esc(SEL.obs||"")}"></div>`;
   const pr=p.tams[SEL.t][1]+SEL.x.length*VALOR_ADICIONAL+porTot(); $("#qn").textContent=Q; $("#addP").textContent=brl(pr*Q);
-  $("#addT").textContent=!ABERTO?"Indisponível agora":p.off?"Esgotado hoje":p.lock?"Só fim de semana":falta?"Escolha pelo menos 1 opcional":"Adicionar"; $("#addB").classList.toggle("dis",!ABERTO||p.lock||!!falta); }
+  const semAc=p.tipo==="dia"&&(!SEL.a||acOff(ACOMP.find(a=>a.id===SEL.a)||{}));
+  $("#addT").textContent=!ABERTO?"Indisponível agora":p.off?"Esgotado hoje":p.lock?"Só fim de semana":semAc?"Sem acompanhamento disponível":falta?"Escolha pelo menos 1 opcional":"Adicionar"; $("#addB").classList.toggle("dis",!ABERTO||p.lock||!!falta||semAc); }
 function drawS(){ const s=CUR.s; $(".sheet#det .hi").style.display="none";
   $("#dC").innerHTML=`<h2 style="margin-top:22px;padding-right:50px">${esc(s.n)}</h2><button class="xb" data-close aria-label="Fechar" style="top:14px">✕</button>
   ${s.fl?`<div class="blk"><h4>Sabor <span class="req">Escolha 1</span></h4><div class="chips">${s.fl.map(f=>`<button class="ck${SEL.f===f?" on":""}" data-f="${esc(f)}">${esc(f)}</button>`).join("")}</div></div>`:""}`;
@@ -610,7 +613,7 @@ $("#qp").onclick=()=>{Q=Math.min(20,Q+1); const ob=$("#dObs"); if(ob) SEL.obs=ob
 $("#qm").onclick=()=>{Q=Math.max(1,Q-1); const ob=$("#dObs"); if(ob) SEL.obs=ob.value; CUR.k==="p"?drawP():drawS();};
 /* Chave Pix mostrada quando o cliente escolhe Pix */ const PIX={chave:"+5592992270395",nome:"Moranil Santos De Oliveira Junior",banco:"Nubank"}; $("#pixCp").onclick=async e=>{ const b=e.currentTarget; try{ await navigator.clipboard.writeText(PIX.chave); }catch(_){ const i=document.createElement("textarea"); i.value=PIX.chave; document.body.appendChild(i); i.select(); try{document.execCommand("copy");}catch(__){} i.remove(); } b.textContent="Chave copiada!"; b.classList.add("on"); setTimeout(()=>{ b.textContent="📋 Copiar chave Pix"; b.classList.remove("on"); },2500); }; let CART=[];
 $("#addB").onclick=()=>{ if(!ABERTO) return; let item;
-  if(CUR.k==="p"){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0); if(p.lock) return;
+  if(CUR.k==="p"){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0); if(p.lock) return; if(p.tipo==="dia"&&(!SEL.a||acOff(ACOMP.find(a=>a.id===SEL.a)||{}))) return;
     if(nOpc&&SEL.o.length<1){ $(".chips")?.scrollIntoView({behavior:"smooth",block:"center"}); return; }
     const t=p.tams[SEL.t], det=[]; if(p.tams.length>1) det.push(t[0]);
     if(p.tipo==="dia"){ const a=ACOMP.find(x=>x.id===SEL.a); det.push(`${a.nome}: ${a.itens}`); }
