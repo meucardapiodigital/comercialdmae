@@ -323,7 +323,7 @@ function mountLogo(el,o){ o=o||{}; el.classList.add("lg3d"); el.classList.add(o.
 </section>
 <section id="itens">
   <div class="ih"><input id="iBusca" placeholder="🔎 Buscar item (ex.: x-salada, calabresa)"><button class="tb" id="iTudo">✅ Liberar tudo</button><button class="tb" id="iVolta">← Voltar aos pedidos</button></div>
-  <div class="inf">Toque para marcar um item como <b>Esgotado</b>: ele aparece como "Esgotado hoje" no cardápio de todos os clientes na hora. Toque de novo para liberar. Em <b>Sabores de Pizza</b> você esgota um sabor só (ex.: acabou o catupiry).</div>
+  <div class="inf">Toque para marcar um item como <b>Esgotado</b>: ele aparece como "Esgotado hoje" no cardápio de todos os clientes na hora. Vale também para <b>Opcionais</b> (salada, maionese…) e <b>Porções e adicionais</b> (batata, calabresa, ovo…): quando esgotados, somem da escolha do prato. Toque de novo para liberar. Em <b>Sabores de Pizza</b> você esgota um sabor só (ex.: acabou o catupiry).</div>
   <div id="iLista"><div class="vazio">Carregando itens…</div></div>
 </section>
 <section id="hist" class="vw">
@@ -544,9 +544,12 @@ async function aba(n){ const r=await fetch(`https://docs.google.com/spreadsheets
   const t=await r.text(); if(!r.ok||/^\s*</.test(t)) throw 0; return csv(t); }
 async function carregaCatalogo(){ try{
     if(CATALOGO.dmae){ try{ const ok=v=>!/^n/i.test(nk(v)||"sim");
-        const [pr,be,so]=await Promise.all(["Pratos","Bebidas","Sobremesas"].map(n=>aba(n).catch(()=>null)));
+        const [pr,be,so,op,ad,po]=await Promise.all(["Pratos","Bebidas","Sobremesas","Opcionais","Adicionais","Porcoes"].map(n=>aba(n).catch(()=>null)));
         const S=v=>{ const s=nk(v); return s.startsWith("fim")||s==="fds"?"Fim de semana":s.startsWith("esp")?"Especiais":"Pratos do dia"; };
         const L=[]; (pr||[]).filter(r=>r.prato).forEach(r=>L.push({cat:S(r.secao),nome:r.prato,preco:r.preco||String(r.tamanhos||"").split(";").map(x=>x.split("|")[0].split("=").pop().trim()).filter(Boolean).join(" / "),key:"Pratos|"+r.prato,planilha:ok(r.disponivel)}));
+        (op||[]).filter(r=>r.item).forEach(r=>L.push({cat:"Opcionais (acompanham o prato)",nome:r.item,preco:"",key:"Opcionais|"+r.item,planilha:ok(r.disponivel)}));
+        (po||[]).filter(r=>r.porcao).forEach(r=>{ const u=String(r.preco_unico||"").trim(); L.push({cat:"Porções e adicionais",nome:r.porcao,preco:u?u.replace(".",",")+",00".slice(u.includes(",")||u.includes(".")?3:0):String(r.valores||"").split(/[;\/]/).map(v=>v.trim()).filter(Boolean).join(" / "),key:"Porcoes|"+r.porcao,planilha:ok(r.disponivel)}); });
+        (ad||[]).filter(r=>r.item&&ok(r.disponivel)).forEach(r=>L.push({cat:"Porções e adicionais",nome:r.item+" (adicional)",preco:"",key:"Adicionais|"+r.item,planilha:true}));
         [[be,"Bebidas"],[so,"Sobremesas"]].forEach(([rows,K])=>(rows||[]).filter(r=>r.item).forEach(r=>L.push({cat:K+(r.grupo?" · "+r.grupo:""),nome:r.item,preco:r.preco||"",key:K+"|"+r.item,planilha:ok(r.disponivel)})));
         if(L.length) CAT=L; }catch(e){} if(!CAT.length) CAT=CATALOGO.itens; }
     else if(CATALOGO.itens){ CAT=CATALOGO.itens; }
