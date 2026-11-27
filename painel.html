@@ -504,6 +504,7 @@ async function carregaCatalogo(){
     const pos=po.filter(r=>pk(r,"porcao")); (pos.length?pos.map(r=>[pk(r,"porcao"),sim(pk(r,"disponivel"))]):[["Banana frita",true],["Batata frita",true]]).forEach(([n,ok])=>CAT.push({cat:PO,nome:n,preco:"",key:"Porcoes|"+n,planilha:ok}));
     if(!pr.length) throw 0; }
   catch(e){ CAT=CATALOGO.itens||[]; }
+  CAT=CAT.filter(i=>!String(i.key).startsWith("Adicionais|"));   // adicionais cobrados à parte não aparecem mais
   if(!CAT.length){ $("#iLista").innerHTML=`<div class="vazio">Não consegui ler a lista de itens. Verifique a internet.</div>`; return; }
   desenhaItens(); }
 function contaEsg(){ const n=CAT.length?CAT.filter(i=>OFFP[i.key]).length:Object.keys(OFFP).length; $$("[data-esg]").forEach(e=>e.textContent=n||""); }
