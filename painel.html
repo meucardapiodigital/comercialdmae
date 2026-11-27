@@ -122,7 +122,13 @@ main{flex:1;min-width:0;display:flex;flex-direction:column}
 #mEnt .bx2{background:var(--pn);border:1px solid var(--ln);border-radius:18px;padding:20px;max-width:400px;width:100%;display:flex;flex-direction:column;gap:10px}
 #mEnt h3{margin:0;color:var(--y2)}#mEnt p{margin:0;color:var(--mu);font-size:14px}
 #mEnt input{background:var(--bg);border:1px solid var(--ln);border-radius:12px;padding:13px;color:var(--tx);font:inherit;outline:none}
-#eAtual{background:var(--bg);border-radius:10px;padding:10px;font-weight:700}
+#eLista{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto}
+.mbr{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--ln);border-radius:12px;padding:10px 12px}
+.mbr div{flex:1;min-width:0}.mbr small{display:block;color:var(--mu);font-size:13px}
+.mbr button{border-radius:9px;padding:9px 12px;font-weight:800;min-height:42px}.mbr .env{background:var(--zap);color:#fff}.mbr .rem{color:var(--rd)}
+#eAdd{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--ln);padding-top:10px}#eAdd b{font-size:14px}
+#eSalva{background:var(--y);color:#2a1a08;border-radius:10px;padding:11px;font-weight:800;min-height:44px}
+.cact{display:flex;gap:8px}.ca{flex:1;background:var(--pn2);border:1px solid var(--ln);border-radius:10px;padding:9px 8px;font-weight:800;font-size:13px;min-height:42px}.ca.z{color:#86efac}
 .rw{display:flex;gap:8px;flex-wrap:wrap}.rw button{flex:1;border-radius:10px;padding:11px;font-weight:800;min-height:44px;background:var(--pn2)}.rw #eSalva{background:var(--y);color:#2a1a08}.rw #eApaga{color:var(--rd)}
 .bnav{display:none}
 .site{flex:1;display:flex;flex-direction:column;min-height:0}
@@ -190,7 +196,7 @@ html[data-tema="claro"] .cd{box-shadow:0 1px 3px rgba(80,50,20,.08)}
   <button class="nv" data-v="itens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v14H4z M4 10h16 M10 10v9"/></svg>Cardápio do dia<span class="bd" data-esg style="background:#9b1712"></span></button>
   <button class="nv" data-v="site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg>Cardápio digital</button>
   <button class="nv" data-v="fin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Finalizados</button>
-  <button class="nv" data-v="ent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h4l3-7h4l1 7 M14 6h3"/></svg>Entregador</button>
+  <button class="nv" data-v="ent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h4l3-7h4l1 7 M14 6h3"/></svg>Motoboys</button>
   <button class="nv" data-v="aj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3 M12 19v3 M2 12h3 M19 12h3 M5 5l2 2 M17 17l2 2 M5 19l2-2 M17 7l2-2"/></svg>Ajustes</button>
   <div class="sst"><div><span class="dot" id="dImp"></span><span id="tImp">Impressão automática desligada</span></div><div><span class="dot" id="dSom"></span><span id="tSom">Som de novo pedido ligado</span></div><div><span class="dot ok" id="dOn"></span><span id="modoP">Online</span></div></div>
   <button class="tema" data-tema-bt><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/></svg><span data-tema-tx>Tema claro</span></button>
@@ -231,7 +237,7 @@ html[data-tema="claro"] .cd{box-shadow:0 1px 3px rgba(80,50,20,.08)}
     <button class="opt" data-tema-bt><div><b>Aparência</b><small>Escolha o tema claro ou escuro. Fica salvo neste aparelho.</small></div><em data-tema-em>Escuro</em></button>
     <button class="opt" id="bSom"><div><b>Som de novo pedido</b><small>Toca um alerta até o pedido ser aceito.</small></div><em id="eSom">Ligado</em></button>
     <button class="opt" id="bAuto"><div><b>Impressão automática</b><small>Imprime a comanda assim que o pedido chega. Deixe ligado só no computador da cozinha.</small></div><em id="eAuto">Desligada</em></button>
-    <button class="opt" id="bEnt"><div><b>WhatsApp do entregador</b><small id="sEnt">Nenhum número salvo.</small></div><em>Alterar</em></button>
+    <button class="opt" id="bEnt"><div><b>Motoboys</b><small id="sEnt">Nenhum motoboy salvo.</small></div><em>Gerenciar</em></button>
     <button class="opt" id="bTeste" style="display:none"><div><b>Pedido de teste</b><small>Cria um pedido de exemplo.</small></div><em>Criar</em></button>
     <button class="opt" id="bSair"><div><b>Sair do painel</b><small>Para entrar de novo, use o e-mail e a senha da loja.</small></div><em>Sair</em></button>
   </div></div>
@@ -242,15 +248,16 @@ html[data-tema="claro"] .cd{box-shadow:0 1px 3px rgba(80,50,20,.08)}
   <button data-v="itens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v14H4z M4 10h16 M10 10v9"/></svg>Itens<span class="bd" data-esg style="background:#9b1712"></span></button>
   <button data-v="site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg>Cardápio</button>
   <button data-v="fin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Finalizados</button>
-  <button data-v="ent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h4l3-7h4l1 7"/></svg>Entregador</button>
+  <button data-v="ent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h4l3-7h4l1 7"/></svg>Motoboys</button>
   <button data-v="aj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>Mais</button>
 </nav>
 </div>
 
 <div class="salvo" id="salvo">Cardápio atualizado</div>
-<div id="mEnt"><div class="bx2"><h3 class="cz">WhatsApp do entregador</h3><p>Os pedidos de entrega são enviados para este número com o endereço e a localização. Fica salvo neste aparelho.</p>
-  <div id="eAtual"></div><input id="eNum" type="tel" inputmode="tel" placeholder="(93) 9 9999-9999">
-  <div class="rw"><button id="eSalva">Salvar número</button><button id="eApaga">Apagar</button><button id="eFecha">Fechar</button></div></div></div>
+<div id="mEnt"><div class="bx2"><h3 class="cz" id="eTit">Motoboys</h3><p id="eSub"></p>
+  <div id="eLista"></div>
+  <div id="eAdd"><b>Adicionar motoboy</b><input id="eNome" placeholder="Nome do motoboy"><input id="eNum" type="tel" inputmode="tel" placeholder="WhatsApp: (93) 9 9999-9999"><button id="eSalva">Adicionar motoboy</button></div>
+  <div class="rw"><button id="eFecha">Fechar</button></div></div></div>
 <div id="rc"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -437,6 +444,7 @@ function card(p){ const m=min(p), nx=proximo(p);
     <div class="tg">${modoTag(p)}<span>${esc(pagCurto(p.pag))}</span>${p.end&&p.end.bairro?`<span>${esc(p.end.bairro)}</span>`:""}</div>
     <div class="s">${p.itens.map(i=>`${i.q}× ${esc(i.n)}`).join(" · ")}</div>
     <div class="v">${R(p.total)}</div>
+    ${p.status!=="recebido"?`<div class="cact"><button class="ca" data-pr="${p.id}">🖨️ Imprimir</button>${p.modo==="entrega"?`<button class="ca z" data-zap="${p.id}">🛵 Motoboy</button>`:""}</div>`:""}
     ${nx?`<button class="go ${p.status}" data-st="${nx[0]}" data-id="${p.id}">${curto(p)}</button>`:""}</div>`; }
 function desenha(){ const at=PED.filter(p=>COLS.some(c=>c[0]===p.status)), fin=PED.filter(p=>p.status==="entregue"||p.status==="cancelado"), ok=PED.filter(p=>p.status!=="cancelado");
   $("#cols").innerHTML=COLS.map(([k,t,c])=>{ const l=at.filter(p=>p.status===k); return `<div class="col${ABA===k?" on":""}"><h2><i style="background:var(${c})"></i>${t}<span>${l.length}</span></h2><div class="lst">${l.map(card).join("")||`<div class="vazio">Nenhum pedido aqui</div>`}</div></div>`; }).join("");
@@ -469,7 +477,7 @@ function desenhaDet(){ const p=PED.find(x=>x.id===SEL), d=$("#det");
     ${p.obs?`<div class="ob"><b>Observação:</b> ${esc(p.obs)}</div>`:""}
     <div class="acs"><button class="ac" data-pr="${p.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9V3h12v6 M6 18H4v-7h16v7h-2 M7 14h10v7H7z"/></svg>Imprimir</button>
       <button class="ac z" data-zc="${p.id}"${tel?"":" disabled"}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20l1.5-4A8 8 0 1 1 8 18.5z"/></svg>WhatsApp</button>
-      <button class="ac e" data-zap="${p.id}"${p.modo==="entrega"?"":" disabled"}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h4l3-7h4l1 7"/></svg>Entregador</button></div>
+      <button class="ac e" data-zap="${p.id}"${p.modo==="entrega"?"":" disabled"}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h4l3-7h4l1 7"/></svg>Motoboys</button></div>
     ${["recebido","preparo","pronto","saiu"].includes(p.status)?`<button class="cx" data-st="cancelado" data-id="${p.id}">Cancelar pedido</button>`:""}
    </div>
    ${nx?`<div class="df"><button class="go ${p.status}" data-st="${nx[0]}" data-id="${p.id}">${nx[1]}</button></div>`:""}`; }
@@ -535,17 +543,28 @@ $("#bLoja").onclick=async()=>{ if(LOJA_ABERTA===null) return; const novo=!LOJA_A
 const EK="painel_entregador_"+LOJA_ID;
 const entNum=()=>{ try{ return localStorage.getItem(EK)||""; }catch(e){ return ""; } };
 const fmtTel=d=>{ d=String(d||"").replace(/\D/g,"").replace(/^55(?=\d{10,11}$)/,""); return d.length===11?`(${d.slice(0,2)}) ${d.slice(2,3)} ${d.slice(3,7)}-${d.slice(7)}`:d.length===10?`(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`:d; };
+const EKL="painel_motoboys_"+LOJA_ID;
+function motoboys(){ let l=[]; try{ l=JSON.parse(localStorage.getItem(EKL)||"[]"); }catch(e){}
+  if(!l.length){ const v=entNum(); if(v){ l=[{nome:"Entregador",num:v}]; salvaMotos(l); } } return l; }
+function salvaMotos(l){ try{ localStorage.setItem(EKL,JSON.stringify(l)); }catch(e){} }
 let ZAP_PEND=null;
-function desenhaEnt(){ const n=entNum(); $("#sEnt").textContent=n?"Número salvo: "+fmtTel(n):"Nenhum número salvo.";
-  $("#eAtual").style.display=n?"":"none"; $("#eAtual").textContent=n?"Número salvo: "+fmtTel(n):""; $("#eApaga").style.display=n?"":"none"; }
-function abreEnt(msg){ $("#eNum").value=""; desenhaEnt(); if(msg){ $("#eAtual").style.display=""; $("#eAtual").textContent=msg; } $("#mEnt").classList.add("on"); setTimeout(()=>$("#eNum").focus(),50); }
-function fechaEnt(){ $("#mEnt").classList.remove("on"); }
-$("#bEnt").onclick=()=>abreEnt(); $("#eFecha").onclick=()=>{ ZAP_PEND=null; fechaEnt(); };
-$("#mEnt").onclick=e=>{ if(e.target.id==="mEnt"){ ZAP_PEND=null; fechaEnt(); } };
+function desenhaEnt(){ const l=motoboys();
+  $("#sEnt").textContent=l.length?(l.length===1?"1 motoboy: ":l.length+" motoboys: ")+l.map(m=>m.nome).join(", "):"Nenhum motoboy salvo.";
+  $("#eTit").textContent=ZAP_PEND?"Enviar pedido #"+ZAP_PEND.num:"Motoboys";
+  $("#eSub").textContent=ZAP_PEND?(l.length?"Toque em Enviar no motoboy que vai levar este pedido.":"Cadastre um motoboy abaixo para enviar o pedido."):"Os pedidos de entrega vão pelo WhatsApp com endereço e localização. A lista fica salva neste aparelho.";
+  $("#eLista").innerHTML=l.map((m,i)=>`<div class="mbr"><div><b>${esc(m.nome)}</b><small>${esc(fmtTel(m.num))}</small></div>${ZAP_PEND?`<button class="env" data-env="${i}">Enviar</button>`:""}<button class="rem" data-rem="${i}">Remover</button></div>`).join("")||`<div class="mu">Nenhum motoboy cadastrado ainda.</div>`; }
+function abreEnt(p){ ZAP_PEND=p&&p.id?p:null; $("#eNome").value=""; $("#eNum").value=""; desenhaEnt(); $("#mEnt").classList.add("on"); }
+function fechaEnt(){ ZAP_PEND=null; $("#mEnt").classList.remove("on"); }
+$("#bEnt").onclick=()=>abreEnt(); $("#eFecha").onclick=fechaEnt;
+$("#mEnt").onclick=e=>{ if(e.target.id==="mEnt") fechaEnt(); };
 $("#eSalva").onclick=()=>{ let d=$("#eNum").value.replace(/\D/g,""); if(d.startsWith("55")&&d.length>11) d=d.slice(2);
   if(d.length<10||d.length>11){ alert("Digite o número com DDD. Ex.: (93) 9 9999-9999"); return; }
-  try{ localStorage.setItem(EK,d); }catch(e){} desenhaEnt(); fechaEnt(); aviso("Número do entregador salvo"); const p=ZAP_PEND; ZAP_PEND=null; if(p) enviaZap(p); };
-$("#eApaga").onclick=()=>{ if(!confirm("Apagar o número do entregador salvo?")) return; try{ localStorage.removeItem(EK); }catch(e){} desenhaEnt(); $("#eNum").focus(); };
+  const l=motoboys(); if(l.some(m=>m.num===d)){ alert("Esse número já está na lista."); return; }
+  l.push({nome:$("#eNome").value.trim()||("Motoboy "+(l.length+1)),num:d}); salvaMotos(l);
+  $("#eNome").value=""; $("#eNum").value=""; desenhaEnt(); aviso("Motoboy adicionado"); };
+$("#eLista").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; e.stopPropagation(); const l=motoboys();
+  if(b.dataset.env!==undefined){ const m=l[+b.dataset.env], p=ZAP_PEND; fechaEnt(); if(m&&p) window.open(`https://wa.me/55${m.num}?text=${encodeURIComponent(msgZap(p))}`,"_blank"); return; }
+  if(b.dataset.rem!==undefined){ const k=+b.dataset.rem; if(!confirm("Remover "+l[k].nome+" da lista?")) return; l.splice(k,1); salvaMotos(l); try{ localStorage.removeItem(EK); }catch(e){} desenhaEnt(); } };
 $("#eNum").onkeydown=e=>{ if(e.key==="Enter") $("#eSalva").click(); };
 desenhaEnt();
 function msgZap(p){ const e=p.end, L=[];
@@ -556,8 +575,7 @@ function msgZap(p){ const e=p.end, L=[];
   L.push("","*Itens:*"); p.itens.forEach(i=>{ L.push(`• ${i.q}x ${i.n}`); (i.det||[]).forEach(d=>L.push(`   ${d}`)); });
   L.push("",`💰 *Total:* ${R(p.total)}`,`💳 *Pagamento:* ${p.pag}${p.troco?` (levar troco para R$ ${p.troco})`:""}`); if(p.obs) L.push(`📝 *Obs.:* ${p.obs}`);
   return L.join("\n"); }
-function enviaZap(p){ const n=entNum(); if(!n){ ZAP_PEND=p; abreEnt("Cadastre o WhatsApp do entregador para enviar o pedido #"+p.num+"."); return; }
-  window.open(`https://wa.me/55${n}?text=${encodeURIComponent(msgZap(p))}`,"_blank"); }
+function enviaZap(p){ abreEnt(p); }
 
 /* ---------- comanda ---------- */
 function imprimir(p){ $("#rc").innerHTML=`<h3>Comercial D’Mãe</h3><div class="c">Pedido #${esc(p.num)} · ${hm(p.criado)}</div><div class="c"><b>${p.modo==="entrega"?"ENTREGA":p.modo==="mesa"?"MESA "+esc(p.mesa||""):"RETIRADA"}</b></div><hr>
