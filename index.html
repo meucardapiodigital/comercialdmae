@@ -243,7 +243,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));z-index:70;transform:translate(-50%,-150%);background:var(--gold2);color:#1a0f0a;font-weight:800;padding:12px 18px;border-radius:999px;transition:transform .4s cubic-bezier(.2,1.3,.4,1);white-space:nowrap}
 .toast.show{transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}.dish .ph img{transform:none;opacity:1}.row.lin{opacity:1;transform:none}#intro{display:none}.ib .nm{clip-path:none}}
-/* Acompanhamentos: cores com contraste nitido */.op.on small{color:#3a2412!important;opacity:1}.op.on .rd{border-color:#1a0f0a!important;background:#fbf1de}.op.on .rd::after{background:#1a0f0a!important}.op:not(.on):not(:disabled) .rd{border-color:#d4aa5c}.op:not(.on):not(:disabled) small{color:#e8d9bf}.op:disabled{opacity:1!important;cursor:not-allowed;border-style:dashed;border-color:#6b5544;background:#140d09}.op:disabled b{color:#cbbba3}.op:disabled small{color:#e0a96d}.op:disabled .rd{border-color:#6b5544}
 </style>
 </head>
 <body>
@@ -270,7 +269,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
   <nav class="cats"><div class="crow" id="cats">
     <button class="chip on" data-go="s-dia">Pratos do dia</button><button class="chip" data-go="s-esp">Especiais</button><button class="chip" data-go="s-fds">Fim de semana</button>
     <button class="chip" data-go="s-beb">Bebidas</button><button class="chip" data-go="s-sob">Sobremesas</button></div></nav>
-  <section class="sec" id="s-dia"><div class="sh reveal"><small>Feito na hora</small><h2>Pratos do Dia</h2><div class="orn"><i></i></div><p>Acompanha arroz, feijão e macarrão + até 2 opcionais à sua escolha</p></div><div id="lDia"></div></section>
+  <section class="sec" id="s-dia"><div class="sh reveal"><small>Feito na hora</small><h2>Pratos do Dia</h2><div class="orn"><i></i></div><p>Acompanha arroz, feijão e macarrão + até 2 opcionais à sua escolha</p><div class="notice" style="margin-top:10px">➕ Quer turbinar seu prato? Adicione <b>ovo, calabresa ou batata frita</b> por <b>+ R$ 3,00</b> cada.</div></div><div id="lDia"></div></section>
   <section class="sec" id="s-esp"><div class="sh reveal"><small>Da casa</small><h2>Especiais</h2><div class="orn"><i></i></div></div><div id="lEsp"></div></section>
   <section class="sec" id="s-fds"><div class="sh reveal"><small>Sábado · Domingo · Feriados</small><h2>Fim de Semana</h2><div class="orn"><i></i></div><p id="fdsTxt"></p></div><div id="lFds"></div></section>
   <section class="sec" id="s-beb"><div class="sh reveal"><small>Geladinhas</small><h2>Bebidas</h2><div class="orn"><i></i></div></div><div class="paper reveal" id="pBeb"></div></section>
@@ -305,7 +304,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <button class="geo" id="geoB" type="button">📍 Enviar minha localização</button><div id="geoI">Ajuda o entregador a chegar mais rápido.</div><div class="notice" id="rotaN">⏰ Faça seu pedido antecipado! Primeira rota de entrega a partir das 10:50.</div></div>
   <div class="blk"><h4>Pagamento</h4><div class="chips" id="pag"><button class="ck" data-v="Pix">Pix</button><button class="ck" data-v="Débito">Cartão de débito</button><button class="ck" data-v="Crédito">Cartão de crédito</button><button class="ck" data-v="Dinheiro">Dinheiro</button></div>
     <div class="notice" style="margin-top:10px">💳 <b>Pagamento no cartão:</b> é cobrada uma pequena taxa da maquininha — <b>débito +<span class="tdb">2</span>%</b> e <b>crédito +<span class="tcr">5</span>%</b>.</div>
-    <div id="pixB" hidden style="margin-top:10px"><div class="notice" style="line-height:1.5">💠 <b>Pague com Pix</b><br>Chave (celular): <b style="font-size:17px;letter-spacing:.3px">(92) 99227-0395</b><br>Moranil Santos De Oliveira Junior · Nubank<div style="margin-top:10px"><button type="button" class="ck" id="pixCp">📋 Copiar chave Pix</button></div><div style="margin-top:8px">Faça o Pix do <b>valor total</b> e envie o <b>comprovante</b> no WhatsApp junto com o pedido.</div></div></div><div id="trB" hidden><label class="lbl" for="troco">Troco para quanto?</label><input class="inp" id="troco" inputmode="decimal" placeholder="Ex.: 100,00"></div></div>
+    <div id="trB" hidden><label class="lbl" for="troco">Troco para quanto?</label><input class="inp" id="troco" inputmode="decimal" placeholder="Ex.: 100,00"></div></div>
   <div class="blk"><h4>Observações</h4><textarea class="inp" id="obs" rows="2" placeholder="Ex.: sem cebola, carne bem passada"></textarea></div>
   <div class="sum"><div><span>Subtotal</span><span id="sS"></span></div><div id="sT"><span id="sTl">Entrega</span><span id="sTv">escolha o local</span></div><div id="sF" style="display:none"><span id="sFl"></span><span id="sFv"></span></div><div class="tot"><span>Total</span><span id="sTo"></span></div></div>
   <button class="send" id="send">Enviar pedido</button><div id="sErr"></div><button class="zapF" id="zapF" type="button">💬 Enviar pelo WhatsApp</button>
@@ -422,33 +421,32 @@ let CONFIG={ whatsapp:"5592986014944", endereco:"Rua 21 de Abril, nº 389",
             "2027-01-01","2027-02-08","2027-02-09","2027-03-26","2027-04-21","2027-05-01","2027-05-27","2027-09-05","2027-09-07","2027-10-12","2027-10-24","2027-11-02","2027-11-15","2027-11-20","2027-12-08","2027-12-25"]};
 let ACOMP=[{id:"op1",nome:"Opção 1",itens:"Arroz, feijão e macarrão",fds:false},{id:"op2",nome:"Opção 2",itens:"Baião e macarrão",fds:true}];
 let OPCIONAIS=["Salada","Maionese","Purê","Vatapá"];
-let ADICIONAIS=[], VALOR_ADICIONAL=3;
-let PORCOES=[["Banana frita","🍌"],["Batata frita","🍟"],["Calabresa","🌭"]], VALORES_PORCAO=[5,10,15,20];   // porções extras (R$)
-let PORCAO_UNICA=[["Ovo frito","🍳",3]];   // porções de valor único (R$)
+let ADICIONAIS=["Ovo","Calabresa","Batata frita"], VALOR_ADICIONAL=3;
+let PORCOES=[["Banana frita","🍌"],["Batata frita","🍟"]], VALORES_PORCAO=[5,10,15,20];   // porções extras (R$)
 /* Pratos: tipo "dia" usa Opção 1/2 + opcionais; "esp" tem acompanhamento próprio */
 let PRATOS=[
- {s:"dia",n:"Frango Guisado",p:20,img:"guisado"},{s:"dia",n:"Frango Frito",p:20,img:"frito"},{s:"dia",n:"Carne de Sol",p:28,img:"carnesol"},
- {s:"dia",n:"Isca de Carne",p:23,img:"isca"},{s:"dia",n:"Carne Assada de Panela",p:25,img:"panela"},{s:"dia",n:"Bife Acebolado",p:25,img:"acebolado"},
- {s:"dia",n:"Bife de Fígado",p:20,img:"figado"},{s:"dia",n:"Carne Moída",p:20,img:"moida"},{s:"dia",n:"Costela com Macaxeira",p:20,img:"costela"},
+ {s:"dia",n:"Frango Guisado",p:20,img:"guisado"},{s:"dia",n:"Frango Frito",p:20,img:"frito"},{s:"dia",n:"Carne de Sol",p:27,img:"carnesol"},
+ {s:"dia",n:"Isca de Carne",p:22,img:"isca"},{s:"dia",n:"Carne Assada de Panela",p:22,img:"panela"},{s:"dia",n:"Bife Acebolado",p:25,img:"acebolado"},
+ {s:"dia",n:"Bife de Fígado",p:18,img:"figado"},{s:"dia",n:"Carne Moída",p:18,img:"moida"},{s:"dia",n:"Costela com Macaxeira",p:20,img:"costela"},
  {s:"dia",n:"Linguiça de Frango",p:20,img:"linguica"},
  {s:"dia",n:"Tambaqui Frito sem Espinha",p:23,img:"tambaqui",d:"Tambaqui frito sem espinha, com limão"},
  {s:"dia",n:"Pacu Frito",p:23,img:"pacu",d:"2 peixes fritinhos, com limão e farofa",extra:"Limão, Farofa"},
  {s:"dia",n:"Carne Guisada",p:20,img:"cguisada",d:"Carne guisada no molho, com batata e cenoura"},
- {s:"dia",n:"Isca de Carne com Calabresa",p:23,img:"iscacalab",d:"Isca de carne acebolada com calabresa"},
- {s:"dia",n:"Mixtão: Carne, Calabresa e Frango",p:23,img:"mixtao",d:"Carne, calabresa e frango acebolados"},
+ {s:"dia",n:"Isca de Carne com Calabresa",p:22,img:"iscacalab",d:"Isca de carne acebolada com calabresa"},
+ {s:"dia",n:"Mixtão: Carne, Calabresa e Frango",p:24,img:"mixtao",d:"Carne, calabresa e frango acebolados"},
  {s:"dia",n:"Rabada",p:25,img:"rabada",d:"Rabada no molho, bem temperada"},
  {s:"esp",n:"Carne de Sol Super",img:"super",tag:"Serve até 3",d:"Sabor e qualidade em um só prato!",tam:[["Serve 1 pessoa",35],["Serve 2 pessoas",65],["Serve 3 pessoas",95]],
    fixo:"Arroz, Macarrão, Feijão, 100g de carne com queijo coalho, Banana frita, Batata frita",opc:2},
- {s:"esp",n:"Lasanha Completa",img:"lasanha",tag:"Serve até 3",d:"Forma de 500 ml com queijo, presunto, molho branco e molho vermelho de carne.",tam:[["Serve 1 pessoa",30],["Serve 2 pessoas",50],["Serve 3 pessoas",75]],
+ {s:"esp",n:"Lasanha Completa",img:"lasanha",tag:"Serve até 3",d:"Forma de 500 ml com queijo, presunto, molho branco e molho vermelho de carne.",tam:[["Serve 1 pessoa",27],["Serve 2 pessoas",50],["Serve 3 pessoas",75]],
    fixo:"Arroz, Batata frita",opc:2},
  {s:"esp",n:"Caldeirada de Tambaqui",img:"caldeirada",tag:"Sem espinha",d:"Caldeirada de tambaqui sem espinha, caprichada no tempero.",tam:[["Para 1 pessoa",30],["Para 2 pessoas",55],["Para 3 pessoas",80]],
    fixo:"Arroz, Pirão, Vinagrete, Farofa, Pimenta"},
- {s:"esp",n:"Lasanha Simples",p:20,img:"lasimples",d:"Lasanha na marmitinha, bem gratinada."},
+ {s:"esp",n:"Lasanha Simples",p:17,img:"lasimples",d:"Lasanha na marmitinha, bem gratinada."},
 
- {s:"fds",n:"Banda de Tambaqui Assada",img:"banda",tag:"Fim de semana",d:"Banda de tambaqui assada na brasa.",tam:[["Completa (com acompanhamentos)",65],["Simples",60,"Limão, Pimenta, Farofa, Banana frita"]],
+ {s:"fds",n:"Banda de Tambaqui Assada",img:"banda",tag:"Fim de semana",d:"Banda de tambaqui assada na brasa.",tam:[["Completa (com acompanhamentos)",65],["Simples",60]],
    fixo:"Baião, Farofa, Maionese, Vinagrete, Banana frita, Limão, Pimenta",fixoSo:0},
- {s:"fds",tipo:"dia",n:"Frango Assado",img:"assado",tag:"Fim de semana",d:"O melhor frango assado da região!",tam:[["Frango completo",65],["Frango simples",60],["Banda de frango",35]]}
-
+ {s:"fds",n:"Frango Assado",img:"assado",tag:"Fim de semana",d:"O melhor frango assado da região!",tam:[["Frango completo (com acompanhamentos)",65],["Frango simples",60],["Banda de frango",35]],
+   fixo:"Baião, Macarrão, Maionese, Vinagrete, Farofa, Limão, Pimenta",fixoSo:0}
 ];
 let BEBIDAS=[["Refrigerantes 1 L",[["Coca-Cola 1 L",10],["Fanta 1 L",10],["Baré 1 L",8],["Pepsi 1 L",8]]],
   ["Refrigerantes 1,5 L / 2 L",[["Coca-Cola 1,5 L",12],["Fanta 1,5 L",12],["Baré 2 L",12]]],
@@ -466,8 +464,6 @@ const lista=s=>String(s||"").split(",").map(x=>x.trim()).filter(Boolean);
 function hojeManaus(){ try{ const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Manaus",year:"numeric",month:"2-digit",day:"2-digit",weekday:"short"}).formatToParts(new Date());
   const g=t=>p.find(x=>x.type===t).value; return {iso:`${g("year")}-${g("month")}-${g("day")}`,wd:g("weekday")}; }catch(e){ const d=new Date(); return {iso:d.toISOString().slice(0,10),wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()]}; } }
 const H=hojeManaus(); let fer=false, FDS=false;
-const LIB=k=>OFF["Libera|"+k]===H.iso;   // painel liberou hoje um item de fim de semana
-const acOff=a=>!!OFF["Acompanhamentos|"+a.nome]||(a.fds&&!FDS&&!LIB("Acompanhamentos|"+a.nome));
 function calcFDS(){ fer=CONFIG.feriados.includes(H.iso); const f=String(CONFIG.feriado_hoje||"AUTO").toUpperCase(); FDS=f==="SIM"?true:(f==="NÃO"||f==="NAO")?false:(H.wd==="Sat"||H.wd==="Sun"||fer); }
 const fmtTel=n=>{const d=n.slice(2);return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`};
 
@@ -481,7 +477,7 @@ $("#zap").href="https://wa.me/"+CONFIG.whatsapp; $("#zapT").textContent=fmtTel(C
 $("#dayP").textContent=fer?"🎉 Feriado: especiais liberados":"🔥 Fim de semana: especiais liberados"; $("#dayP").style.display=FDS?"":"none";
 $("#dayP").classList.toggle("we",FDS);
 $("#fdsTxt").textContent=FDS?"Disponíveis hoje! Aproveite.":"Disponíveis somente aos sábados, domingos e feriados.";
-PRATOS.forEach((p,i)=>{ if(p.offPlan===undefined) p.offPlan=!!p.off; p.off=p.offPlan||!!OFF["Pratos|"+p.n]; p.id="p"+i; p.tipo=p.tipo||(p.s==="dia"?"dia":"esp"); p.fdsLock=p.s==="fds"&&!FDS&&!LIB("Pratos|"+p.n); p.lock=p.fdsLock||!!p.off; p.tams=p.tam||[["Prato",p.p]]; p.min=Math.min(...p.tams.map(t=>t[1])); });
+PRATOS.forEach((p,i)=>{ if(p.offPlan===undefined) p.offPlan=!!p.off; p.off=p.offPlan||!!OFF["Pratos|"+p.n]; p.id="p"+i; p.tipo=p.tipo||(p.s==="dia"?"dia":"esp"); p.fdsLock=p.s==="fds"&&!FDS; p.lock=p.fdsLock||!!p.off; p.tams=p.tam||[["Prato",p.p]]; p.min=Math.min(...p.tams.map(t=>t[1])); });
 dishHTML=(p,i)=>`<button class="dish reveal${p.lock?" lock":""}" style="--d:${(i%3)*.06}s" data-open="${p.id}">
   <div class="ph"><img src="${fotoDe(p.img)}" alt="${esc(p.n)}" loading="lazy" decoding="async"></div>
   <div class="tx"><h3>${esc(p.n)}</h3><div class="ds">${esc(p.d||(p.tipo==="dia"?"Com acompanhamentos e até 2 opcionais":""))}</div>
@@ -527,14 +523,12 @@ async function lerPlanilha(){ if(!SHEET_ID) return;
     if(C.valor_adicional&&!isNaN(num(C.valor_adicional))) VALOR_ADICIONAL=num(C.valor_adicional);
     if(C.taxa_debito_pct!==undefined&&!isNaN(num(C.taxa_debito_pct))) TAXA_CARTAO["Débito"]=num(C.taxa_debito_pct);
     if(C.taxa_credito_pct!==undefined&&!isNaN(num(C.taxa_credito_pct))) TAXA_CARTAO["Crédito"]=num(C.taxa_credito_pct);
-    if(po&&po.length){ const icP=n=>/banana/i.test(n)?"🍌":/batata/i.test(n)?"🍟":/calabresa/i.test(n)?"🌭":/ovo/i.test(n)?"🍳":"🍽️"; const pv=po.filter(r=>r.porcao&&sim(r.disponivel));
-      PORCAO_UNICA=pv.filter(r=>!isNaN(num(r.preco_unico))&&num(r.preco_unico)>0).map(r=>[r.porcao,icP(r.porcao),num(r.preco_unico)]);
-      PORCOES=pv.filter(r=>!(num(r.preco_unico)>0)).map(r=>[r.porcao,icP(r.porcao)]);
+    if(po&&po.length){ PORCOES=po.filter(r=>r.porcao&&sim(r.disponivel)).map(r=>[r.porcao,/banana/i.test(r.porcao)?"🍌":/batata/i.test(r.porcao)?"🍟":"🍽️"]);
       const vs=String((po.find(r=>r.valores)||{}).valores||"").split(/[;\/]/).map(num).filter(v=>!isNaN(v)&&v>0); if(vs.length) VALORES_PORCAO=vs; }
     if(pr&&pr.length) PRATOS=pr.filter(r=>r.prato).map(r=>{ const sec=nk(r.secao); const s=sec.startsWith("fim")||sec==="fds"?"fds":sec.startsWith("esp")?"esp":"dia";
-      const tam=String(r.tamanhos||"").split(";").map(x=>{ const [y,ac]=x.split("|"), i=y.lastIndexOf("="); if(i<0) return null; const t=[y.slice(0,i).trim(),num(y.slice(i+1))]; if(ac&&ac.trim()) t.push(ac.trim()); return t; }).filter(t=>t&&!isNaN(t[1]));
+      const tam=String(r.tamanhos||"").split(";").map(x=>{ const i=x.lastIndexOf("="); return i<0?null:[x.slice(0,i).trim(),num(x.slice(i+1))]; }).filter(t=>t&&!isNaN(t[1]));
       const o={s,n:r.prato,img:r.foto,d:r.descricao,tag:r.selo,off:!sim(r.disponivel)};
-      if(tam.length){ o.tam=tam; o.fixo=r.acompanha; if(sim(r.acompanha_so_na_1a_opcao)&&nk(r.acompanha_so_na_1a_opcao)) o.fixoSo=0; const q=parseInt(r.qtd_opcionais); if(q) o.opc=q; if(/^s/i.test(nk(r.escolhe_opcao_1_ou_2))) o.tipo="dia"; }
+      if(tam.length){ o.tam=tam; o.fixo=r.acompanha; if(sim(r.acompanha_so_na_1a_opcao)&&nk(r.acompanha_so_na_1a_opcao)) o.fixoSo=0; const q=parseInt(r.qtd_opcionais); if(q) o.opc=q; }
       else { o.p=num(r.preco); if(s==="dia"){ if(r.acompanha) o.extra=r.acompanha; } else { if(r.acompanha) o.fixo=r.acompanha; const q=parseInt(r.qtd_opcionais); if(q) o.opc=q; } }
       return o; }).filter(o=>o.tam||!isNaN(o.p));
     if(ac&&ac.length) ACOMP=ac.filter(r=>r.opcao&&sim(r.disponivel)).map((r,i)=>({id:"op"+(i+1),nome:r.opcao,itens:r.itens,fds:!/^n/i.test(nk(r.so_fim_de_semana)||"nao")}));
@@ -571,49 +565,44 @@ if(REDUZ||sessionStorage.getItem("dmae_intro")) { intro.remove(); gone=true; } e
 /* ======================= detalhe ======================= */
 let CUR=null,SEL={},Q=1;
 const porTot=()=>Object.values(SEL.por||{}).reduce((a,v)=>a+(v||0),0);
-function openP(id){ const p=PRATOS.find(x=>x.id===id); if(!p) return; CUR={k:"p",p}; SEL={t:0,a:(ACOMP.find(a=>!acOff(a))||{}).id||null,o:[],x:[],pt:"",por:{}}; Q=1;
+function openP(id){ const p=PRATOS.find(x=>x.id===id); if(!p) return; CUR={k:"p",p}; SEL={t:0,a:FDS?null:"op1",o:[],x:[],pt:"",por:{}}; if(FDS) SEL.a="op1"; Q=1;
   $("#dImg").src=fotoDe(p.img); drawP(); show("#det"); $("#sbar").classList.add("show"); }
 function openS(id){ const s=SIMPLES[id]; CUR={k:"s",s,id}; SEL={f:s.fl?s.fl[0]:""}; Q=1; $("#dImg").src=""; drawS(); show("#det"); $("#sbar").classList.add("show"); }
-/* itens esgotados no painel somem da escolha */
-const _vis=()=>({O:OPCIONAIS.filter(o=>!OFF["Opcionais|"+o]),A:ADICIONAIS.filter(x=>!OFF["Adicionais|"+x]),P:PORCOES.filter(([n])=>!OFF["Porcoes|"+n]),U:PORCAO_UNICA.filter(([n])=>!OFF["Porcoes|"+n])});
-function drawP(){ const {O:OPCIONAIS,A:ADICIONAIS,P:PORCOES,U:PORCAO_UNICA}=_vis(); const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0), falta=nOpc&&!SEL.o.length?1:0, comp=!p.fixoSo&&p.fixoSo!==undefined?SEL.t===0:true;
+function drawP(){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0), falta=nOpc&&!SEL.o.length?1:0, comp=!p.fixoSo&&p.fixoSo!==undefined?SEL.t===0:true;
   $(".sheet#det .hi").style.display="";
   $("#dC").innerHTML=`<h2>${esc(p.n)}</h2><p class="dsc">${esc(p.d||"")}</p>
   ${p.off?`<div class="notice">Este prato acabou por hoje.</div>`:p.fdsLock?`<div class="notice">Este prato sai somente aos sábados, domingos e feriados.</div>`:""}
   ${p.tams.length>1?`<div class="blk"><h4>Escolha a opção <span class="req">Obrigatório</span></h4><div class="ops">${p.tams.map((t,i)=>`<button class="op${SEL.t===i?" on":""}" data-t="${i}"><span class="l"><span class="rd"></span><b>${esc(t[0])}</b></span><span class="p">${brl(t[1])}</span></button>`).join("")}</div></div>`:""}
-  ${p.tipo==="dia"?`<div class="blk"><h4>Acompanhamento <span class="req">Escolha 1</span></h4><div class="ops">${ACOMP.map(a=>{ const off=acOff(a), esg=!!OFF["Acompanhamentos|"+a.nome];
-     return `<button class="op${SEL.a===a.id?" on":""}" data-a="${a.id}" ${off?"disabled":""}><span class="l"><span class="rd"></span><span><b>${a.nome}</b><small>${a.itens}${off?(esg?" · indisponível hoje":" · só sáb, dom e feriados"):""}</small></span></span></button>`; }).join("")}</div>
+  ${p.tipo==="dia"?`<div class="blk"><h4>Acompanhamento <span class="req">Escolha 1</span></h4><div class="ops">${ACOMP.map(a=>{ const off=a.fds&&!FDS;
+     return `<button class="op${SEL.a===a.id?" on":""}" data-a="${a.id}" ${off?"disabled":""}><span class="l"><span class="rd"></span><span><b>${a.nome}</b><small>${a.itens}${off?" · só sáb, dom e feriados":""}</small></span></span></button>`; }).join("")}</div>
      ${p.extra?`<div class="fix" style="margin-top:10px">${lista(p.extra).map(x=>`<div>${esc(x)}</div>`).join("")}</div>`:""}</div>`:""}
-  ${(fx=>fx?`<div class="blk"><h4>Acompanha</h4><div class="fix">${lista(fx).map(x=>`<div>${esc(x)}</div>`).join("")}</div></div>`:"")((p.tams[SEL.t]&&p.tams[SEL.t][2])||(p.fixo&&(p.fixoSo===undefined||SEL.t===0)?p.fixo:""))}
-  ${nOpc?`<div class="blk"><h4>Opcionais — escolha 1 ou ${nOpc} <span class="${falta?"req":"ok"}">${SEL.o.length}/${nOpc}${falta?"":" ✓"}</span></h4><div class="chips">${OPCIONAIS.map(o=>{ const on=SEL.o.includes(o);
+  ${p.fixo&&(p.fixoSo===undefined||SEL.t===0)?`<div class="blk"><h4>Acompanha</h4><div class="fix">${lista(p.fixo).map(x=>`<div>${esc(x)}</div>`).join("")}</div></div>`:""}
+  ${nOpc?`<div class="blk"><h4>Opcionais — escolha 1 ou ${nOpc} <span class="${falta?"req":"ok"}">${SEL.o.length}/${nOpc}${falta?"":" ✓"}</span></h4><div class="chips">${OPCIONAIS.filter(o=>!OFF["Opcionais|"+o]).map(o=>{ const on=SEL.o.includes(o);
      return `<button class="ck${on?" on":""}" data-o="${esc(o)}" ${!on&&SEL.o.length>=nOpc?"disabled":""}>${esc(o)}</button>`; }).join("")}</div></div>`:""}
-  ${nOpc&&(ADICIONAIS.length||PORCOES.length||PORCAO_UNICA.length)?`<div class="blk">${ADICIONAIS.length?`<h4>Adicionais <span>+ ${brl(VALOR_ADICIONAL)} cada</span></h4>
+  ${nOpc?`<div class="blk"><h4>Adicionais <span>+ ${brl(VALOR_ADICIONAL)} cada</span></h4>
      <p style="color:var(--muted);font-size:13px;margin:-4px 0 10px">Opcional: cada adicional acrescenta ${brl(VALOR_ADICIONAL)} ao prato.</p>
-     <div class="chips">${ADICIONAIS.map(x=>`<button class="ck${SEL.x.includes(x)?" on":""}" data-x="${esc(x)}">${esc(x)} <small style="opacity:.75">+${brl(VALOR_ADICIONAL).replace("R$","R$ ")}</small></button>`).join("")}</div>`:""}
-     ${PORCOES.length||PORCAO_UNICA.length?`<h4 style="${ADICIONAIS.length?"margin-top:16px":""}">Porções <span>opcional</span></h4>
+     <div class="chips">${ADICIONAIS.filter(x=>!OFF["Adicionais|"+x]).map(x=>`<button class="ck${SEL.x.includes(x)?" on":""}" data-x="${esc(x)}">${esc(x)} <small style="opacity:.75">+${brl(VALOR_ADICIONAL).replace("R$","R$ ")}</small></button>`).join("")}</div>
+     ${PORCOES.length?`<h4 style="margin-top:16px">Porções <span>opcional</span></h4>
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${PORCOES.map(([n,ic])=>`<button class="ck${SEL.pt===n?" on":""}" data-pt="${esc(n)}" style="display:block;text-align:center;line-height:1.3;padding:11px 8px"><span style="display:block;white-space:nowrap">${ic} ${esc(n)}</span><small style="display:block;opacity:.8;font-size:11.5px">${SEL.por[n]?brl(SEL.por[n]):"toque para escolher"}</small></button>`).join("")}</div>
-     ${SEL.pt?`<p style="color:var(--muted);font-size:13px;margin:10px 0 8px">Valor da porção de ${esc(SEL.pt.toLowerCase())}:</p><div class="chips">${VALORES_PORCAO.map(v=>`<button class="ck${SEL.por[SEL.pt]===v?" on":""}" data-pv="${v}">${brl(v)}</button>`).join("")}</div>`:""}
-     ${PORCAO_UNICA.map(([n,ic,v])=>`<button class="ck${SEL.por[n]?" on":""}" data-pu="${esc(n)}" data-v="${v}" style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:10px;padding:11px 14px"><span style="white-space:nowrap">${ic} ${esc(n)}</span><small style="opacity:.85;white-space:nowrap">${brl(v)}</small></button>`).join("")}`:""}</div>`:""}
+     ${SEL.pt?`<p style="color:var(--muted);font-size:13px;margin:10px 0 8px">Valor da porção de ${esc(SEL.pt.toLowerCase())}:</p><div class="chips">${VALORES_PORCAO.map(v=>`<button class="ck${SEL.por[SEL.pt]===v?" on":""}" data-pv="${v}">${brl(v)}</button>`).join("")}</div>`:""}`:""}</div>`:""}
   <div class="blk"><h4>Observação do prato</h4><input class="inp" id="dObs" placeholder="Ex.: sem cebola" value="${esc(SEL.obs||"")}"></div>`;
   const pr=p.tams[SEL.t][1]+SEL.x.length*VALOR_ADICIONAL+porTot(); $("#qn").textContent=Q; $("#addP").textContent=brl(pr*Q);
-  const semAc=p.tipo==="dia"&&(!SEL.a||acOff(ACOMP.find(a=>a.id===SEL.a)||{}));
-  $("#addT").textContent=!ABERTO?"Indisponível agora":p.off?"Esgotado hoje":p.lock?"Só fim de semana":semAc?"Sem acompanhamento disponível":falta?"Escolha pelo menos 1 opcional":"Adicionar"; $("#addB").classList.toggle("dis",!ABERTO||p.lock||!!falta||semAc); }
+  $("#addT").textContent=!ABERTO?"Indisponível agora":p.off?"Esgotado hoje":p.lock?"Só fim de semana":falta?"Escolha pelo menos 1 opcional":"Adicionar"; $("#addB").classList.toggle("dis",!ABERTO||p.lock||!!falta); }
 function drawS(){ const s=CUR.s; $(".sheet#det .hi").style.display="none";
   $("#dC").innerHTML=`<h2 style="margin-top:22px;padding-right:50px">${esc(s.n)}</h2><button class="xb" data-close aria-label="Fechar" style="top:14px">✕</button>
   ${s.fl?`<div class="blk"><h4>Sabor <span class="req">Escolha 1</span></h4><div class="chips">${s.fl.map(f=>`<button class="ck${SEL.f===f?" on":""}" data-f="${esc(f)}">${esc(f)}</button>`).join("")}</div></div>`:""}`;
   $("#qn").textContent=Q; $("#addP").textContent=brl(s.pr*Q); $("#addT").textContent=ABERTO?"Adicionar":"Indisponível agora"; $("#addB").classList.toggle("dis",!ABERTO); }
-$("#dC").addEventListener("click",e=>{ const t=e.target.closest("[data-t]"),a=e.target.closest("[data-a]"),o=e.target.closest("[data-o]"),f=e.target.closest("[data-f]"),x=e.target.closest("[data-x]"),bn=e.target.closest("[data-pt],[data-pv]"),pu=e.target.closest("[data-pu]");
-  if(pu){ const n=pu.dataset.pu; SEL.por[n]=SEL.por[n]?0:+pu.dataset.v; }
+$("#dC").addEventListener("click",e=>{ const t=e.target.closest("[data-t]"),a=e.target.closest("[data-a]"),o=e.target.closest("[data-o]"),f=e.target.closest("[data-f]"),x=e.target.closest("[data-x]"),bn=e.target.closest("[data-pt],[data-pv]");
   if(bn&&bn.dataset.pt){ SEL.pt=bn.dataset.pt; } else if(bn){ const v=+bn.dataset.pv; SEL.por[SEL.pt]=SEL.por[SEL.pt]===v?0:v; }
   if(x){ const v=x.dataset.x,i=SEL.x.indexOf(v); if(i>=0) SEL.x.splice(i,1); else SEL.x.push(v); }
   if(t){SEL.t=+t.dataset.t;} if(a&&!a.disabled){SEL.a=a.dataset.a;} if(f){SEL.f=f.dataset.f;}
   if(o){ const v=o.dataset.o,i=SEL.o.indexOf(v); if(i>=0) SEL.o.splice(i,1); else SEL.o.push(v); }
-  if(t||a||o||f||x||bn||pu){ const ob=$("#dObs"); if(ob) SEL.obs=ob.value; CUR.k==="p"?drawP():drawS(); } });
+  if(t||a||o||f||x||bn){ const ob=$("#dObs"); if(ob) SEL.obs=ob.value; CUR.k==="p"?drawP():drawS(); } });
 $("#qp").onclick=()=>{Q=Math.min(20,Q+1); const ob=$("#dObs"); if(ob) SEL.obs=ob.value; CUR.k==="p"?drawP():drawS();};
 $("#qm").onclick=()=>{Q=Math.max(1,Q-1); const ob=$("#dObs"); if(ob) SEL.obs=ob.value; CUR.k==="p"?drawP():drawS();};
-/* Chave Pix mostrada quando o cliente escolhe Pix */ const PIX={chave:"+5592992270395",nome:"Moranil Santos De Oliveira Junior",banco:"Nubank"}; $("#pixCp").onclick=async e=>{ const b=e.currentTarget; try{ await navigator.clipboard.writeText(PIX.chave); }catch(_){ const i=document.createElement("textarea"); i.value=PIX.chave; document.body.appendChild(i); i.select(); try{document.execCommand("copy");}catch(__){} i.remove(); } b.textContent="Chave copiada!"; b.classList.add("on"); setTimeout(()=>{ b.textContent="📋 Copiar chave Pix"; b.classList.remove("on"); },2500); }; let CART=[];
+let CART=[];
 $("#addB").onclick=()=>{ if(!ABERTO) return; let item;
-  if(CUR.k==="p"){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0); if(p.lock) return; if(p.tipo==="dia"&&(!SEL.a||acOff(ACOMP.find(a=>a.id===SEL.a)||{}))) return;
+  if(CUR.k==="p"){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0); if(p.lock) return;
     if(nOpc&&SEL.o.length<1){ $(".chips")?.scrollIntoView({behavior:"smooth",block:"center"}); return; }
     const t=p.tams[SEL.t], det=[]; if(p.tams.length>1) det.push(t[0]);
     if(p.tipo==="dia"){ const a=ACOMP.find(x=>x.id===SEL.a); det.push(`${a.nome}: ${a.itens}`); }
@@ -638,8 +627,8 @@ function upd(){ const n=CART.reduce((s,l)=>s+l.q,0); $("#cN").textContent=n; $("
   if(!n&&$("#cart").classList.contains("show")) hide(); }
 /* ---- locais de entrega e taxas ---- */
 const LOCAIS=[
- {g:"Condomínios",t:5,c:1,l:["Harmonia","Vida Nova","Liberdade","Felicidade","Violeta","Jasmim","Verona","Paraíso"]},
- {g:"Bairro Lago Azul",t:5,l:["Lago Azul","Ismail Aziz","São João","Granja São Pedro 1","Granja São Pedro 2","Granja São Pedro 3","Comunidade Aliança com Deus","Comunidade Agrovila","Comunidade Renascer"]},
+ {g:"Condomínios",t:5,c:1,l:["Harmonia","Vida Nova","Liberdade","Felicidade","Violeta","Jasmim","Verona"]},
+ {g:"Bairro Lago Azul",t:5,l:["Ismail Aziz","São João","Granja São Pedro 1","Granja São Pedro 2","Granja São Pedro 3","Comunidade Aliança com Deus","Comunidade Agrovila","Comunidade Renascer"]},
  {g:"Outros bairros",l:[["23 de Setembro",3],["União da Vitória",8],["Viver Melhor",10],["Santa Etelvina",10],["Comunidade Bom Jesus",10]]}];
 const LOC_MAP={}; LOCAIS.forEach(G=>G.l.forEach(x=>{ const [n,t]=Array.isArray(x)?x:[x,G.t]; LOC_MAP[n]={n,t,c:!!G.c,g:G.g}; }));
 const nomeLoc=L=>L?(L.c?"Condomínio "+L.n:L.n):"";
@@ -652,7 +641,7 @@ function drawLoc(){ $$("[data-tipo]").forEach(b=>b.classList.toggle("on",b.datas
   $("#bxBA").style.display=$("#bxBA").nextElementSibling.style.display=LOC&&LOC.c?"":"none"; }
 const pfOk=()=>PF.nome&&PF.tel&&(MODO!=="entrega"||(PF.loc&&LOC_MAP[PF.loc]&&(LOC_MAP[PF.loc].c?PF.bloco&&PF.apto:PF.end)));
 function drawC(){ $$(".tdb").forEach(e=>e.textContent=String(TAXA_CARTAO["Débito"]).replace(".",",")); $$(".tcr").forEach(e=>e.textContent=String(TAXA_CARTAO["Crédito"]).replace(".",",")); $$("#modo .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===MODO)); $$("#pag .ck").forEach(b=>b.classList.toggle("on",b.dataset.v===PAG));
-  $("#trB").hidden=PAG!=="Dinheiro"; $("#pixB").hidden=PAG!=="Pix"; const r=pfOk()&&!EDIT; $("#pfF").style.display=r?"none":""; $("#endB").style.display=MODO==="entrega"?"":"none";
+  $("#trB").hidden=PAG!=="Dinheiro"; const r=pfOk()&&!EDIT; $("#pfF").style.display=r?"none":""; $("#endB").style.display=MODO==="entrega"?"":"none";
   $("#geoB").style.display=$("#geoI").style.display=$("#rotaN").style.display=MODO==="entrega"?"":"none"; $("#pfT").textContent=MODO==="entrega"?"Dados para entrega":"Seus dados";
   $("#pfR").innerHTML=r?`<div class="card">Olá, <b>${esc(PF.nome)}</b>! 👋<br>📱 ${esc(PF.tel)}${MODO==="entrega"&&LOC?`<br>📍 ${esc(nomeLoc(LOC))}${LOC.c?` · Bloco ${esc(PF.bloco)} · Apto ${esc(PF.apto)}`:` — ${esc(PF.end)}`}${PF.ref?`<br>Ref.: ${esc(PF.ref)}`:""}<br>🛵 Taxa de entrega: <b>${brl(LOC.t)}</b>`:""}</div><button class="lnk" id="edit">Alterar meus dados</button>`:"";
   if(!r) [["Nome","nome"],["Tel","tel"],["End","end"],["Ref","ref"],["Bloco","bloco"],["Apto","apto"]].forEach(([a,b])=>{ const el=$("#p"+a); if(!el.value) el.value=PF[b]||""; }); drawLoc(); upd(); }
@@ -671,7 +660,7 @@ $("#send").onclick=()=>{ if(!CART.length||!ABERTO) return; const r=$("#pfF").sty
   let m=`🔥 *PEDIDO — COMERCIAL D'MÃE*\n${MODO==="entrega"?"🛵 Entrega":"🏠 Retirada no local"}\n\n`+CART.map(l=>`• ${l.q}x *${l.n}*${l.det.length?"\n   "+l.det.join("\n   "):""}\n   ${brl(l.pr*l.q)}`).join("\n");
   m+=`\n\nSubtotal: ${brl(sub())}${pctC()?`\nTaxa do cartão (${PAG.toLowerCase()} ${pctC()}%): ${brl(taxaC())}`:""}${MODO==="entrega"?`\nTaxa de entrega (${nomeLoc(LOC)}): ${brl(LOC.t)}`:""}\n*Total: ${brl(sub()+taxaC()+taxaE())}*\n\n👤 ${p.nome}\n📱 ${p.tel}`;
   if(MODO==="entrega"){ m+=LOC.c?`\n🏢 *${nomeLoc(LOC)}*\n   Bloco ${p.bloco} · Apto ${p.apto}`:`\n📍 ${p.end} — *${LOC.n}*`; if(p.ref) m+=`\n   Ref.: ${p.ref}`; if(GEO) m+=`\n🗺️ Localização: https://maps.google.com/?q=${GEO.lat},${GEO.lng}`; }
-  m+=`\n💳 Pagamento: ${PAG==="Débito"||PAG==="Crédito"?"Cartão de "+PAG.toLowerCase():PAG}`; const t=$("#troco").value.trim(); if(PAG==="Dinheiro"&&t) m+=` (troco para R$ ${t})`; const o=$("#obs").value.trim(); if(o) m+=`\n📝 Obs.: ${o}`; if(PAG==="Pix") m+=`\n\n💠 Chave Pix: ${PIX.chave} (${PIX.nome} · ${PIX.banco})\n📎 Vou enviar o comprovante do Pix aqui nesta conversa.`;
+  m+=`\n💳 Pagamento: ${PAG==="Débito"||PAG==="Crédito"?"Cartão de "+PAG.toLowerCase():PAG}`; const t=$("#troco").value.trim(); if(PAG==="Dinheiro"&&t) m+=` (troco para R$ ${t})`; const o=$("#obs").value.trim(); if(o) m+=`\n📝 Obs.: ${o}`;
   enviaOnline(p,m); };
 /* ======================= pedido online (painel) ======================= */
 let ENVIANDO=false;
@@ -689,7 +678,7 @@ async function enviaOnline(p,m){ if(ENVIANDO) return; const b=$("#send"), agora=
     lsS("dmae_pedido",{id,num:ped.num,abrir:true}); CART=[]; $("#obs").value=""; $("#troco").value=""; ENVIANDO=false; b.disabled=false; b.textContent="Enviar pedido"; upd(); hide(); acompanhar(id,true);
     aviso("✅ Pedido registrado! Abrindo o WhatsApp…"); setTimeout(()=>{ location.href=uOk; },1200); }
   catch(e){ ENVIANDO=false; b.disabled=false; b.textContent="Enviar pedido"; location.href=uSo; } }
-function msgZap(p,n,tr,ob){ const L=[], br=x=>brl(x).replace(/\u00a0/g," "), linha="━━━━━━━━━━━━━━━";
+function msgZap(p,n,tr,ob){ const L=[], br=x=>brl(x).replace(/ /g," "), linha="━━━━━━━━━━━━━━━";
   L.push(`🔥 *COMERCIAL D'MÃE — ${n?"PEDIDO #"+n:"NOVO PEDIDO"}*`,linha,MODO==="entrega"?"🛵 *ENTREGA*":"🏠 *RETIRADA NO LOCAL*","");
   L.push(`👤 *Cliente:* ${p.nome}`,`📱 *WhatsApp:* ${p.tel}`,"","🍽️ *ITENS DO PEDIDO*");
   CART.forEach(l=>{ L.push(`*${l.q}x ${l.n}* — ${br(l.pr*l.q)}`); l.det.forEach(d=>L.push(`   ▸ ${d}`)); });
@@ -728,7 +717,7 @@ document.addEventListener("click",e=>{ if(e.target.id==="trkFim"){ lsS("dmae_ped
 (()=>{ const a=lsG("dmae_pedido"); if(a&&a.id){ acompanhar(a.id,!!a.abrir); if(a.abrir) lsS("dmae_pedido",{id:a.id,num:a.num}); } })();
 /* ---- aberto/fechado e itens esgotados (controlados pelo painel) ---- */
 DB.ouvirLoja(o=>{ const f=o.aberto===false; if(f!==FECHADO_P){ const era=FECHADO_P; FECHADO_P=f; setStatus(...ST_PLAN); if(CUR&&$("#det").classList.contains("show")) (CUR.k==="p"?drawP():drawS()); if(era&&!f) aviso("🟢 Abrimos! Já pode enviar o seu pedido"); } });
-DB.ouvirOff(o=>{ OFF=o||{}; const antes=CART.length; CART=CART.filter(l=>!OFF["Pratos|"+l.n]&&!OFF["Bebidas|"+l.n]&&!OFF["Sobremesas|"+l.n]); renderAll(); upd(); if(CART.length!==antes) aviso("Um item do seu pedido acabou hoje"); });
+DB.ouvirOff(o=>{ OFF=o||{}; try{ if(typeof SEL!=="undefined"&&SEL){ if(SEL.o) SEL.o=SEL.o.filter(x=>!OFF["Opcionais|"+x]); if(SEL.x) SEL.x=SEL.x.filter(x=>!OFF["Adicionais|"+x]); } if(CUR&&$("#det").classList.contains("show")) (CUR.k==="p"?drawP():drawS()); }catch(e){} const antes=CART.length; CART=CART.filter(l=>!OFF["Pratos|"+l.n]&&!OFF["Bebidas|"+l.n]&&!OFF["Sobremesas|"+l.n]); renderAll(); upd(); if(CART.length!==antes) aviso("Um item do seu pedido acabou hoje"); });
 
 function show(s){ $$(".sheet").forEach(x=>x.classList.remove("show")); $(s).classList.add("show"); $("#ov").classList.add("show"); document.body.style.overflow="hidden"; $(s).scrollTop=0; }
 function hide(){ $$(".sheet").forEach(x=>x.classList.remove("show")); $("#sbar").classList.remove("show"); $("#ov").classList.remove("show"); document.body.style.overflow=""; }
