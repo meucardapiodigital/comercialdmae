@@ -269,7 +269,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
   <nav class="cats"><div class="crow" id="cats">
     <button class="chip on" data-go="s-dia">Pratos do dia</button><button class="chip" data-go="s-esp">Especiais</button><button class="chip" data-go="s-fds">Fim de semana</button>
     <button class="chip" data-go="s-beb">Bebidas</button><button class="chip" data-go="s-sob">Sobremesas</button></div></nav>
-  <section class="sec" id="s-dia"><div class="sh reveal"><small>Feito na hora</small><h2>Pratos do Dia</h2><div class="orn"><i></i></div><p>Acompanha arroz, feijão e macarrão + até 2 opcionais à sua escolha</p><div class="notice" style="margin-top:10px">➕ Quer turbinar seu prato? Adicione <b>ovo, calabresa ou batata frita</b> por <b>+ R$ 3,00</b> cada.</div></div><div id="lDia"></div></section>
+  <section class="sec" id="s-dia"><div class="sh reveal"><small>Feito na hora</small><h2>Pratos do Dia</h2><div class="orn"><i></i></div><p>Acompanha arroz, feijão e macarrão + até 2 opcionais à sua escolha</p><div class="notice" style="margin-top:10px">➕ Quer turbinar seu prato? Adicione <b>ovo, calabresa, batata frita ou banana frita</b> por <b>+ R$ 3,00</b> cada.</div></div><div id="lDia"></div></section>
   <section class="sec" id="s-esp"><div class="sh reveal"><small>Da casa</small><h2>Especiais</h2><div class="orn"><i></i></div></div><div id="lEsp"></div></section>
   <section class="sec" id="s-fds"><div class="sh reveal"><small>Sábado · Domingo · Feriados</small><h2>Fim de Semana</h2><div class="orn"><i></i></div><p id="fdsTxt"></p></div><div id="lFds"></div></section>
   <section class="sec" id="s-beb"><div class="sh reveal"><small>Geladinhas</small><h2>Bebidas</h2><div class="orn"><i></i></div></div><div class="paper reveal" id="pBeb"></div></section>
@@ -421,7 +421,7 @@ let CONFIG={ whatsapp:"5592986014944", endereco:"Rua 21 de Abril, nº 389",
             "2027-01-01","2027-02-08","2027-02-09","2027-03-26","2027-04-21","2027-05-01","2027-05-27","2027-09-05","2027-09-07","2027-10-12","2027-10-24","2027-11-02","2027-11-15","2027-11-20","2027-12-08","2027-12-25"]};
 let ACOMP=[{id:"op1",nome:"Opção 1",itens:"Arroz, feijão e macarrão",fds:false},{id:"op2",nome:"Opção 2",itens:"Baião e macarrão",fds:true}];
 let OPCIONAIS=["Salada","Maionese","Purê","Vatapá"];
-let ADICIONAIS=["Ovo","Calabresa","Batata frita"], VALOR_ADICIONAL=3;
+let ADICIONAIS=["Ovo","Calabresa","Batata frita","Banana frita"], VALOR_ADICIONAL=3;
 let PORCOES=[["Banana frita","🍌"],["Batata frita","🍟"]], VALORES_PORCAO=[5,10,15,20];   // porções extras (R$)
 /* Pratos: tipo "dia" usa Opção 1/2 + opcionais; "esp" tem acompanhamento próprio */
 let PRATOS=[
@@ -533,7 +533,8 @@ async function lerPlanilha(){ if(!SHEET_ID) return;
       return o; }).filter(o=>o.tam||!isNaN(o.p));
     if(ac&&ac.length) ACOMP=ac.filter(r=>r.opcao&&sim(r.disponivel)).map((r,i)=>({id:"op"+(i+1),nome:r.opcao,itens:r.itens,fds:!/^n/i.test(nk(r.so_fim_de_semana)||"nao")}));
     if(op&&op.length) OPCIONAIS=op.filter(r=>r.item&&sim(r.disponivel)).map(r=>r.item);
-    if(ad&&ad.length) ADICIONAIS=ad.filter(r=>r.item&&sim(r.disponivel)).map(r=>r.item);
+    if(ad&&ad.length){ const ditos=new Set(ad.filter(r=>r.item).map(r=>nk(r.item))); ADICIONAIS=ad.filter(r=>r.item&&sim(r.disponivel)).map(r=>r.item);
+      ["Ovo","Calabresa","Batata frita","Banana frita"].forEach(x=>{ if(!ditos.has(nk(x))) ADICIONAIS.push(x); }); }
     const grp=rows=>{ const g=[]; rows.filter(r=>r.item&&sim(r.disponivel)&&!isNaN(num(r.preco))).forEach(r=>{ let x=g.find(y=>y[0]===(r.grupo||"Outros")); if(!x){ x=[r.grupo||"Outros",[]]; g.push(x); }
       const fl=String(r.sabores||"").split(",").map(v=>v.trim()).filter(Boolean); x[1].push(fl.length?[r.item,num(r.preco),fl]:[r.item,num(r.preco)]); }); return g; };
     if(be&&be.length) BEBIDAS=grp(be); if(so&&so.length) SOBREMESAS=grp(so);
@@ -582,8 +583,8 @@ function drawP(){ const p=CUR.p, nOpc=p.tipo==="dia"?2:(p.opc||0), falta=nOpc&&!
   ${nOpc?`<div class="blk"><h4>Adicionais <span>+ ${brl(VALOR_ADICIONAL)} cada</span></h4>
      <p style="color:var(--muted);font-size:13px;margin:-4px 0 10px">Opcional: cada adicional acrescenta ${brl(VALOR_ADICIONAL)} ao prato.</p>
      <div class="chips">${ADICIONAIS.filter(x=>!OFF["Adicionais|"+x]).map(x=>`<button class="ck${SEL.x.includes(x)?" on":""}" data-x="${esc(x)}">${esc(x)} <small style="opacity:.75">+${brl(VALOR_ADICIONAL).replace("R$","R$ ")}</small></button>`).join("")}</div>
-     ${PORCOES.length?`<h4 style="margin-top:16px">Porções <span>opcional</span></h4>
-     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${PORCOES.map(([n,ic])=>`<button class="ck${SEL.pt===n?" on":""}" data-pt="${esc(n)}" style="display:block;text-align:center;line-height:1.3;padding:11px 8px"><span style="display:block;white-space:nowrap">${ic} ${esc(n)}</span><small style="display:block;opacity:.8;font-size:11.5px">${SEL.por[n]?brl(SEL.por[n]):"toque para escolher"}</small></button>`).join("")}</div>
+     ${PORCOES.filter(([n])=>!OFF["Porcoes|"+n]).length?`<h4 style="margin-top:16px">Porções <span>opcional</span></h4>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${PORCOES.filter(([n])=>!OFF["Porcoes|"+n]).map(([n,ic])=>`<button class="ck${SEL.pt===n?" on":""}" data-pt="${esc(n)}" style="display:block;text-align:center;line-height:1.3;padding:11px 8px"><span style="display:block;white-space:nowrap">${ic} ${esc(n)}</span><small style="display:block;opacity:.8;font-size:11.5px">${SEL.por[n]?brl(SEL.por[n]):"toque para escolher"}</small></button>`).join("")}</div>
      ${SEL.pt?`<p style="color:var(--muted);font-size:13px;margin:10px 0 8px">Valor da porção de ${esc(SEL.pt.toLowerCase())}:</p><div class="chips">${VALORES_PORCAO.map(v=>`<button class="ck${SEL.por[SEL.pt]===v?" on":""}" data-pv="${v}">${brl(v)}</button>`).join("")}</div>`:""}`:""}</div>`:""}
   <div class="blk"><h4>Observação do prato</h4><input class="inp" id="dObs" placeholder="Ex.: sem cebola" value="${esc(SEL.obs||"")}"></div>`;
   const pr=p.tams[SEL.t][1]+SEL.x.length*VALOR_ADICIONAL+porTot(); $("#qn").textContent=Q; $("#addP").textContent=brl(pr*Q);
@@ -717,7 +718,7 @@ document.addEventListener("click",e=>{ if(e.target.id==="trkFim"){ lsS("dmae_ped
 (()=>{ const a=lsG("dmae_pedido"); if(a&&a.id){ acompanhar(a.id,!!a.abrir); if(a.abrir) lsS("dmae_pedido",{id:a.id,num:a.num}); } })();
 /* ---- aberto/fechado e itens esgotados (controlados pelo painel) ---- */
 DB.ouvirLoja(o=>{ const f=o.aberto===false; if(f!==FECHADO_P){ const era=FECHADO_P; FECHADO_P=f; setStatus(...ST_PLAN); if(CUR&&$("#det").classList.contains("show")) (CUR.k==="p"?drawP():drawS()); if(era&&!f) aviso("🟢 Abrimos! Já pode enviar o seu pedido"); } });
-DB.ouvirOff(o=>{ OFF=o||{}; try{ if(typeof SEL!=="undefined"&&SEL){ if(SEL.o) SEL.o=SEL.o.filter(x=>!OFF["Opcionais|"+x]); if(SEL.x) SEL.x=SEL.x.filter(x=>!OFF["Adicionais|"+x]); } if(CUR&&$("#det").classList.contains("show")) (CUR.k==="p"?drawP():drawS()); }catch(e){} const antes=CART.length; CART=CART.filter(l=>!OFF["Pratos|"+l.n]&&!OFF["Bebidas|"+l.n]&&!OFF["Sobremesas|"+l.n]); renderAll(); upd(); if(CART.length!==antes) aviso("Um item do seu pedido acabou hoje"); });
+DB.ouvirOff(o=>{ OFF=o||{}; try{ if(typeof SEL!=="undefined"&&SEL){ if(SEL.o) SEL.o=SEL.o.filter(x=>!OFF["Opcionais|"+x]); if(SEL.x) SEL.x=SEL.x.filter(x=>!OFF["Adicionais|"+x]); if(SEL.por) Object.keys(SEL.por).forEach(n=>{ if(OFF["Porcoes|"+n]){ delete SEL.por[n]; if(SEL.pt===n) SEL.pt=null; } }); } if(CUR&&$("#det").classList.contains("show")) (CUR.k==="p"?drawP():drawS()); }catch(e){} const antes=CART.length; CART=CART.filter(l=>!OFF["Pratos|"+l.n]&&!OFF["Bebidas|"+l.n]&&!OFF["Sobremesas|"+l.n]); renderAll(); upd(); if(CART.length!==antes) aviso("Um item do seu pedido acabou hoje"); });
 
 function show(s){ $$(".sheet").forEach(x=>x.classList.remove("show")); $(s).classList.add("show"); $("#ov").classList.add("show"); document.body.style.overflow="hidden"; $(s).scrollTop=0; }
 function hide(){ $$(".sheet").forEach(x=>x.classList.remove("show")); $("#sbar").classList.remove("show"); $("#ov").classList.remove("show"); document.body.style.overflow=""; }
